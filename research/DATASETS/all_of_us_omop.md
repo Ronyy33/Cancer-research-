@@ -21,3 +21,43 @@
 **⚠️ STOP POINT — requires human researcher action:** Registered Tier requires the human researcher's own identity verification (photo ID) — this is a step only Kevin can complete, not something the agent can do autonomously. Controlled Tier additionally requires Data Access Committee approval.
 
 **Ranking: ★★★☆☆** — right structural shape, unproven cohort/outcome feasibility, and requires human-only registration step.
+
+---
+
+## STATUS UPDATE — 2026-09-09 (D003): Selected as first dataset target, paired with pCR/treatment-response question
+
+Kevin selected All of Us as the first dataset to pursue, paired with the
+pCR/treatment-response prediction question (see `DECISIONS.md` D003 and
+`CANDIDATE_RESEARCH_QUESTIONS.md`). **This specific pairing was not
+verified in the original dataset-discovery research pass** — that pass
+only confirmed general breast-cancer-relevant OMOP concepts (mammography,
+biopsy, endocrine therapy, chemotherapy prevalence) via one unrelated
+mastectomy-cohort study, not specifically neoadjuvant chemotherapy regimen
+identification or post-treatment pathologic response ascertainment.
+
+### What Kevin needs to do (cannot be automated)
+
+1. Go to the All of Us Research Hub (researchallofus.org) and create a
+   researcher account.
+2. Complete the required ethics/training modules (typically an approx.
+   1-2 hour online training on responsible conduct of research with
+   All of Us data).
+3. Complete **identity verification** (photo ID proofing) — this is the
+   hard blocker; it must be Kevin's own government ID, not something the
+   agent can supply or complete on his behalf.
+4. Request/activate Registered Tier access to the Researcher Workbench.
+5. Once Registered Tier access is active, share Workbench access
+   credentials/workspace details back with this project so cohort-building
+   notebooks can be developed against it (analysis happens on-platform;
+   no bulk raw-data export off-platform without a separate egress review).
+
+### What the agent is doing in parallel (no human action needed)
+
+A feasibility investigation has been launched to check, as far as public
+documentation allows, whether All of Us structured data (OMOP concepts) can
+plausibly support: (a) identifying a neoadjuvant chemotherapy cohort, and
+(b) ascertaining pathologic complete response or an equivalent treatment-
+response outcome, either from structured codes or from clinical notes/
+pathology reports available in the Registered Tier. Findings will be
+appended below once the investigation completes.
+

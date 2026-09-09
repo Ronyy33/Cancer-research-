@@ -24,7 +24,46 @@
 **NEXT STEP**
 - Await Kevin's decision from the RESEARCH CHECKPOINT (delivered in chat this session). Once a research question + dataset are approved, proceed autonomously to Stage 7 (cohort construction) without further stop-and-ask, per the routine-work autonomy rule (Section 33).
 
+**DECISION MADE (D003, 2026-09-09):** Kevin selected treatment response/pCR
+prediction as the research question, and All of Us as the first dataset —
+see `DECISIONS.md` D003. This was a deliberate, more ambitious pairing than
+the checkpoint's matched recommendation (pCR+I-SPY2, recurrence+All of Us),
+flagged accordingly.
+
+## 2026-09-09 — Session 2 (continued)
+
+**COMPLETED**
+- Logged decision D003 in `DECISIONS.md`
+- Updated `RESEARCH_STATE.md` to Stage 6, with a clear split between what's
+  blocked on Kevin (All of Us identity verification) vs. what proceeds
+  autonomously
+- Added explicit "what Kevin needs to do" access instructions to
+  `DATASETS/all_of_us_omop.md`
+- Drafted `cohort_definition.md` for the pCR prediction task (index date,
+  prediction time, observation window, outcome, censoring, inclusion/
+  exclusion) — conceptual, pending data-access confirmation
+
+**IN PROGRESS**
+- Feasibility investigation (background agent) into whether All of Us can
+  actually support (a) identifying a neoadjuvant-chemotherapy cohort and
+  (b) ascertaining pCR/treatment response — this specific pairing was not
+  verified in the original dataset-discovery pass and carries real risk
+
+**BLOCKED**
+- All of Us data access itself — requires Kevin's personal photo-ID identity
+  verification (see `DATASETS/all_of_us_omop.md` for exact steps). No
+  cohort can be built against real All of Us data until this is done.
+
+**NEXT STEP**
+- Once the feasibility check returns: if All of Us + pCR looks viable,
+  finalize `cohort_definition.md` and prepare pilot query/cohort-building
+  notebooks for Kevin to run once his Workbench access is active. If not
+  viable as-is, present a revised recommendation (e.g., fall back to I-SPY2,
+  or keep All of Us but change the specific outcome) before proceeding
+  further, since this would be a research-design change significant enough
+  to warrant checking back in.
+
 **DECISION REQUIRED FROM KEVIN**
-1. Which candidate research question to commit to as the primary target (recurrence/DFS prediction is recommended, per `CANDIDATE_RESEARCH_QUESTIONS.md`, with treatment-response/pCR as the lower-risk fallback).
-2. Which dataset to pursue first (METABRIC recommended as the immediately-accessible starting point; All of Us recommended as a parallel, higher-ceiling path that requires Kevin's one-time identity verification).
-3. Whether to pursue any of the human-only-access datasets (SEER-Medicare, Flatiron, TriNetX, All of Us Controlled Tier) at all, given their cost/IRB/credentialing requirements.
+- Complete All of Us Registered Tier registration + identity verification
+  (see `DATASETS/all_of_us_omop.md`) whenever convenient — this is the
+  actual data-access blocker and cannot be done by the agent.

@@ -1,20 +1,20 @@
 # Research State
 
 **Last updated:** 2026-09-09
-**Current stage:** Stage 4/5 complete (candidate questions ranked, datasets ranked) — **AWAITING HUMAN DECISION** before Stage 6 (dataset acquisition) begins.
+**Current stage:** Stage 6 (dataset acquisition) — IN PROGRESS, partially blocked on human action.
 
 ## Stage status
 
 | Stage | Status |
 |---|---|
 | 0. Project setup | COMPLETE |
-| 1. Literature discovery | COMPLETE — 32 papers verified via WebSearch (WebFetch blocked all session; see caveats in each paper note), citation chaining performed topically |
-| 2. Literature synthesis | COMPLETE — `LITERATURE_MATRIX.csv` (32 rows) + 8 detailed paper notes in `PAPERS/` for the highest-value sources |
-| 3. Research gap identification | COMPLETE — `RESEARCH_GAPS.md`, 8 evidence-backed gaps, each with ≥2 supporting sources and confidence levels |
-| 4. Candidate research questions | COMPLETE — `CANDIDATE_RESEARCH_QUESTIONS.md`, 4 candidates scored; recommendation prepared **pending human decision** |
-| 5. Dataset discovery | COMPLETE — `DATASETS/` (SEER, MIMIC/eICU, TCGA-BRCA, METABRIC, I-SPY2, All of Us, + summary table of 9 more) |
-| 6. Dataset acquisition | **BLOCKED — awaiting human decision** (see checkpoint) |
-| 7. Cohort construction | NOT STARTED |
+| 1. Literature discovery | COMPLETE |
+| 2. Literature synthesis | COMPLETE |
+| 3. Research gap identification | COMPLETE |
+| 4. Candidate research questions | COMPLETE — **DECIDED (D003):** treatment response / pCR prediction |
+| 5. Dataset discovery | COMPLETE — **DECIDED (D003):** All of Us (OMOP CDM), first target |
+| 6. Dataset acquisition | IN PROGRESS — feasibility check running (agent); **BLOCKED on Kevin's personal All of Us identity verification** for actual data access |
+| 7. Cohort construction | NOT STARTED — conceptual cohort design for pCR prediction can begin now (no data access required for the design itself) |
 | 8. Data quality analysis | NOT STARTED |
 | 9. Baseline modeling | NOT STARTED |
 | 10. Proposed methodology | NOT STARTED |
@@ -25,17 +25,19 @@
 | 15. Research analysis | NOT STARTED |
 | 16. Paper preparation | NOT STARTED |
 
-## Key findings this session
+## Decision D003 (human-approved, 2026-09-09)
 
-1. **Structured/coded EHR recurrence labels badly under-ascertain true recurrence** (~2.31% coded vs. 11.1% NLP-confirmed, P0005) — independently confirmed by two research passes. This is the single most important finding for our eventual cohort/label design.
-2. **Genuine external (cross-institution) validation of true PREDICTION models (not detection/extraction tools) is almost entirely absent** from the literature found — the field's clearest, most defensible open gap.
-3. **Deep learning does not automatically beat classical models** in this domain (P0027: Cox beat DeepSurv on held-out SEER data) — directly supports our baselines-first, simplest-sufficient-model principle.
-4. **No single dataset is a perfect fit.** SEER/NCDB cannot capture recurrence at all (structural gap, not missingness). METABRIC has a well-powered recurrence endpoint and is fully public but is not EHR-native (no labs/meds/notes/timeline). All of Us has the right longitudinal EHR structure but is unproven for this specific cohort/outcome and requires the human researcher's own identity verification to access.
-5. Two systematic reviews/meta-analyses (P0006, P0007) confirm the aggregate field's benchmark performance is anchored on curated cohorts, not messy real-world EHR, and flag a demographic/geographic equity gap in existing models.
+- **Research question:** treatment response / pathologic complete response (pCR) to neoadjuvant chemotherapy.
+- **First dataset:** All of Us Research Program (OMOP CDM).
+- **Flagged deviation:** this pairing (pCR + All of Us) was not the matched recommendation from the checkpoint (which paired pCR with I-SPY2, and All of Us with recurrence). It is more ambitious/EHR-native but unverified — see `DATASETS/all_of_us_omop.md` status update and the feasibility investigation now running.
 
-## Not yet decided (blocking Stage 6+)
+## What's blocked vs. not blocked
 
-- **The final prediction target** (recurrence/DFS vs. toxicity vs. treatment-response vs. survival) — see `CANDIDATE_RESEARCH_QUESTIONS.md` for the ranked options and recommendation.
-- **The dataset to acquire first** — see `DATASETS/` for ranked options; several strong candidates (Flatiron, SEER-Medicare, TriNetX, All of Us Controlled Tier) require human-only action (credentials, payment, IRB, or identity verification) per project brief Section 33.
+**Blocked on Kevin (cannot be automated):** All of Us Registered Tier requires Kevin's own photo-ID identity verification. See `DATASETS/all_of_us_omop.md` for the exact steps. No All of Us data can be accessed until this is complete.
 
-This is exactly the kind of decision the human-in-the-loop rule (project brief Section 34) reserves for Kevin. See the RESEARCH CHECKPOINT delivered in this session's chat for the concise summary and recommendation. **No dataset acquisition or modeling will proceed until this decision is made.**
+**Not blocked — proceeding autonomously:**
+- Feasibility investigation into whether All of Us structured/OMOP data can plausibly support neoadjuvant-chemo cohort identification + pCR/treatment-response ascertainment (routine research work, no approval needed).
+- Conceptual cohort design (`cohort_definition.md`) for the pCR prediction task — index date, prediction time, observation window, outcome definition, inclusion/exclusion criteria — can be drafted now independent of data access, then refined once the feasibility check and Kevin's access are both in hand.
+- Scaffolding of `scripts/`, `configs/` for the eventual data pipeline.
+
+I-SPY2 (the originally-recommended pCR dataset) remains fully public and immediately accessible with no blocker, and is documented as a fallback/comparison dataset if All of Us proves infeasible for this specific outcome.
