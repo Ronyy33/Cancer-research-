@@ -94,3 +94,70 @@ process measure rather than a clinical-response measure).
 result** — see `DECISIONS.md` D004 and the follow-up checkpoint presented
 to Kevin.
 
+---
+
+## Feasibility investigation #2 — 2026-09-09: RECURRENCE detection (different question)
+
+Following D005 (Kevin reverted to recurrence/relapse prediction, explicitly
+requiring an EHR dataset), a second, narrower feasibility check was run:
+**can recurrence be detected from All of Us structured data alone**
+(diagnosis codes, treatment-restart timing), without needing the free-text
+pathology reports that specifically ruled out pCR above?
+
+**Conclusion: MEDIUM confidence — feasible as a gated pilot, not a clean
+guaranteed endpoint.** This is meaningfully different from the pCR
+verdict (which was a hard structural block).
+
+**Key findings:**
+- Only one published All of Us breast-cancer-outcome study was found —
+  and tellingly, it had to use tamoxifen medication exposure as a crude
+  proxy for "remission" because "the All of Us Research Program database
+  lacks an indicator for remission from breast cancer" (Quality Management
+  in Health Care, PubMed 40167483). No validated recurrence study exists
+  in All of Us yet.
+- **General claims-based recurrence-proxy algorithms are well-validated
+  elsewhere** — combining multiple structured signals (new secondary-
+  malignancy code + new/restarted systemic therapy after a gap + new
+  radiation + cause of death) achieves 92-94% sensitivity / 93-98%
+  specificity against manual chart review in SEER-Medicare and integrated
+  systems like Kaiser Permanente. A single signal alone (e.g. just "new
+  therapy") misses ~40%+ of even near-certain recurrences (Warren et al.
+  2016) — the algorithm MUST be multi-signal.
+- **The critical risk specific to All of Us**: a new 2026 claims-linkage
+  study (PMC12829818) found that for the same patients in the same
+  months, insurance claims show ~75% more procedure codes and ~16% more
+  service dates than All of Us EHR data alone. All of Us is a federated,
+  partial-capture network — care that happens outside a participant's
+  AoU-linked health system is simply invisible. This is a different and
+  additional risk on top of the already-known problem that coded
+  recurrence generally undercounts true recurrence (see Gap 2 in
+  `RESEARCH_GAPS.md`).
+- Unconfirmed whether All of Us populates the OMOP Oncology Module
+  (`episode`/`episode_event` tables built for exactly this purpose) — this
+  is the first thing to check directly in the Workbench.
+- Rough (unverified) cohort size estimate: low thousands to ~15,000 total
+  breast cancer cases in All of Us before filtering; a published Mastectomy
+  phenotype gives a concrete starting cohort of n=4,175.
+- Follow-up duration is adequate for a meaningful subset (~25% of the
+  >287,000 participants with EHR data have 10 years of it) — this favors
+  recurrence prediction over pCR, since recurrence risk extends years
+  post-treatment.
+
+**Resulting methodological decision (not requiring a further stop, since
+the question/dataset choice itself is unchanged from D005):**
+1. Treat the recurrence-proxy label as **noisy, not ground truth**.
+2. Use a **combined multi-signal algorithm**, never a single indicator.
+3. Frame the outcome as **recurrence-free survival with censoring**, not
+   binary classification — "no signal observed" means unknown, not
+   confirmed disease-free.
+4. Run a **mandatory validation gate** (manual chart-timeline review on a
+   small stratified sample) before any cohort-scale modeling, to get a
+   local, honest precision/recall estimate rather than assuming the
+   Medicare/Kaiser performance figures transfer.
+5. Keep METABRIC as an explicit fallback/benchmarking dataset (clean,
+   validated recurrence label, but not full EHR) if the validation gate
+   shows unacceptable label quality.
+
+See the revised `cohort_definition.md` for the full design incorporating
+these points.
+

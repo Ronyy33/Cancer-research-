@@ -1,128 +1,146 @@
-# Cohort Definition — Pathologic Complete Response (pCR) Prediction
+# Cohort Definition — Breast Cancer Recurrence / Relapse Prediction
 
-**Status: DRAFT.** This is a conceptual design written before data access is
-confirmed (Stage 6 is still partially blocked — see `RESEARCH_STATE.md`).
-It will be revised once the All of Us feasibility check (in progress) and
-Kevin's Registered Tier access are both available, and finalized only after
-piloting against real data. Do not treat any inclusion/exclusion criterion
-below as final until that revision.
+**Status: DRAFT, v2.** Superseded from the earlier pCR-focused draft after
+D005 (revert to recurrence, EHR-required) and D006 (All of Us recurrence
+feasibility findings — MEDIUM confidence, proceed as a gated pilot). Will
+be finalized only after real piloting in the All of Us Researcher
+Workbench.
 
 ## Clinical question
 
-Among breast cancer patients who receive neoadjuvant (pre-surgical)
-chemotherapy, can we predict — using only information available **before
-treatment starts** — whether a patient will achieve a pathologic complete
-response (pCR) at the time of surgery?
+Among breast cancer patients treated with curative intent, can we predict
+— using only information available at the end of primary treatment — the
+future risk of recurrence (locoregional or distant)?
 
-## Why this design (per Section 9 of the project brief)
+## Why the design looks the way it does
 
-This must be a genuine **PREDICTION** task, not detection: pCR is inherently
-a future event relative to treatment initiation, so as long as features are
-correctly restricted to the pre-treatment window, this design has structurally
-lower leakage risk than recurrence-prediction tasks in the literature we
-reviewed (see `RESEARCH_GAPS.md` Gap 1). This is a genuine strength of this
-research question relative to the recurrence-prediction alternative.
+Two things this design must account for, both surfaced directly by our own
+research this session:
+
+1. **Structured/coded recurrence labels are known to undercount true
+   recurrence** (Gap 2 in `RESEARCH_GAPS.md`: ICD-coded recurrence caught
+   only 2.3% vs. 11.1% true recurrence in one well-verified study). All of
+   Us adds a *second* layer of the same risk: even a good multi-signal
+   structured algorithm can only see care that happens within the health
+   systems feeding data into All of Us — a new 2026 claims-linkage study
+   found real-world care events undercounted by a wide margin relative to
+   insurance claims for the same patients.
+2. Because of (1), **we cannot treat "no recurrence signal observed" as
+   equivalent to "confirmed disease-free."** It must be treated as
+   **censored** (unknown), not as a negative label. This pushes the study
+   toward a **time-to-event / survival framing** (recurrence-free survival
+   with censoring) rather than simple binary classification — which is
+   also more clinically standard and more defensible statistically when
+   labels are known to be imperfect.
 
 ## Proposed structure
 
 ```
-Index date (neoadjuvant chemotherapy start)
+Index date = end of primary treatment
+  (surgery + adjuvant chemo/radiation/endocrine therapy initiation,
+   whichever marks the point "active initial treatment" is considered
+   complete - exact operational definition to be finalized once we can
+   see what the data actually supports)
   |
-  |-- Baseline window: all information available BEFORE index date
-  |   (demographics, comorbidities, baseline labs, biopsy pathology,
-  |    receptor status [ER/PR/HER2], clinical stage, imaging findings
-  |    at diagnosis)
-  |
-  v
-Prediction time T = index date (chemotherapy start)
-  |
-  | (features must be locked here — nothing after this point may be used
-  |  as a model input)
-  v
-Treatment period (neoadjuvant chemotherapy regimen, duration typically
-  ~4-6 months) -- NOT used as a feature unless explicitly modeling
-  "planned regimen" as a pre-treatment-known input (the planned regimen
-  IS knowable at T and would be a legitimate feature; actual delivered
-  doses/toxicities during treatment are NOT, since those postdate T)
+  |-- Baseline window: diagnosis through index date
+  |   (staging, receptor status [ER/PR/HER2], grade, nodal status,
+  |    treatment received, demographics, comorbidities)
   |
   v
-Surgery date
+Prediction time T = index date
+  |
+  | (features locked here - nothing after T may be used as model input)
+  v
+Follow-up / observation period (multi-year - recurrence risk extends
+  2-10+ years post-treatment, unlike pCR which resolves in months)
   |
   v
-Outcome ascertainment: pathologic complete response (pCR) = no residual
-  invasive cancer in breast and axillary lymph nodes per surgical
-  pathology report (ypT0/is ypN0, standard clinical definition — to be
-  confirmed against whichever pCR definition variant the source data
-  supports, as there are minor variants, e.g. with/without residual DCIS)
+Outcome ascertainment via a COMBINED multi-signal proxy algorithm
+  (not any single signal alone - see Methodology below), applied over
+  the full follow-up period:
+    - new secondary-malignancy diagnosis code (ICD-10 C77-C79) after
+      index date
+    - restarted or changed systemic anticancer therapy after a
+      treatment-free gap (proposed threshold: 6-12 months, per
+      published convention - to be validated against our own pilot)
+    - new radiation therapy to a site inconsistent with initial
+      locoregional treatment
+    - death with breast cancer as underlying/contributing cause
+  |
+  v
+Each patient's follow-up ends at: recurrence-proxy-positive event,
+  death, loss of continuous engagement with the AoU-linked health
+  system (a proxy for "we can no longer see this patient's care"),
+  or end of available data - whichever comes first. This is the
+  censoring point.
 ```
 
-## Index date
+## Outcome label — explicitly treated as NOISY, not ground truth
 
-Date of first administration of neoadjuvant chemotherapy for the current
-breast cancer diagnosis.
-
-## Prediction time (T)
-
-Same as index date. All model features must be measurable and known as of
-this date — this is the "hard requirement" the project brief specifies
-(Section 14): the model must never see information after T.
-
-## Observation window (baseline features)
-
-Look-back period prior to T for extracting baseline covariates:
-diagnosis date through T. Exact look-back bound for pre-existing conditions/
-comorbidities (e.g., "any time prior" vs. "prior 1-2 years") to be decided
-during Stage 7 based on what's actually queryable in the chosen data source.
-
-## Outcome
-
-Binary: pCR (yes/no) at surgical pathology, following completion of
-neoadjuvant chemotherapy and definitive surgery.
-
-## Censoring / attrition considerations
-
-Patients who do not proceed to surgery (e.g., disease progression during
-neoadjuvant treatment, patient declines surgery, loss to follow-up, death
-before surgery) cannot have a pCR outcome ascertained and must be handled
-explicitly — NOT silently dropped, since this could introduce a form of
-outcome-dependent selection bias (patients who progress during treatment
-are more likely to be excluded, which would bias the remaining cohort
-toward treatment-responsive patients). This will be documented as a
-specific limitation and, where feasible, reported as a secondary
-"discontinued before surgery" category rather than simply excluded.
+Per the feasibility investigation: general claims-based recurrence-proxy
+algorithms achieve 86-94% sensitivity / 93-99% specificity **only when
+validated in closed or near-complete care-capture settings** (Medicare
+fee-for-service claims nationally, or single integrated health systems
+like Kaiser Permanente/Geisinger where patients get nearly all care in
+one system). All of Us is neither — it is a federated, partial-capture
+network. **We should not assume those published performance figures
+transfer**, and must establish our own estimate before trusting the
+label for modeling. See Validation Gate below.
 
 ## Inclusion criteria (draft)
 
-- Confirmed invasive breast cancer diagnosis
-- Received neoadjuvant (pre-surgical) chemotherapy with documented start date
-- Underwent definitive breast surgery following neoadjuvant treatment
-- Surgical pathology report available for pCR ascertainment
+- Confirmed invasive breast cancer diagnosis, structured procedure/diagnosis
+  evidence of primary treatment (surgery with or without adjuvant therapy)
+- Sufficient continuous engagement with the AoU-linked health system across
+  the intended follow-up window (operational definition of "continuous
+  engagement" — e.g. minimum visit density — to be set during piloting;
+  this is a deliberate mitigation for the care-outside-network blind spot)
+- No evidence of metastatic (Stage IV) disease at initial diagnosis
 
 ## Exclusion criteria (draft)
 
-- Metastatic disease at diagnosis (Stage IV) — neoadjuvant chemo intent and
-  goals differ fundamentally in the metastatic setting
-- Male breast cancer (extremely rare; would require separate stratified
-  analysis if included at all, given very different population characteristics)
-- Prior breast cancer treatment history that would confound baseline staging
-- Insufficient baseline data to determine ER/PR/HER2 status (a core feature
-  needed for any reasonable pCR model, per the literature — receptor status
-  is consistently among the strongest predictors of pCR)
+- Stage IV at diagnosis (different clinical question — already metastatic,
+  not at risk of a first recurrence)
+- Male breast cancer (separate stratified analysis if pursued at all, per
+  same reasoning as the earlier pCR draft)
+- Insufficient baseline receptor-status/staging data
+- Patients with no follow-up time after index date (cannot contribute
+  information to a time-to-event outcome)
 
-## Open questions to resolve once data access is confirmed
+## MANDATORY VALIDATION GATE before any cohort-scale modeling
 
-1. Can the chosen data source (All of Us, pending feasibility check; or
-   I-SPY2 as fallback) reliably distinguish neoadjuvant from adjuvant
-   chemotherapy administration via structured data, or does this require
-   NLP over clinical notes?
-2. Can pCR be ascertained from structured pathology codes, or does it
-   require NLP extraction from free-text surgical pathology reports (as
-   the broader recurrence literature suggests is often necessary for
-   comparably granular outcomes — see Gap 2 in `RESEARCH_GAPS.md`)?
-3. What is the realistic cohort size once inclusion/exclusion criteria are
-   applied? (All of Us is a general-population program, not cancer-specific
-   — realistic breast-cancer-plus-neoadjuvant-chemo subcohort size is
-   currently unknown and is a focus of the ongoing feasibility check.)
+Per the feasibility investigation's explicit recommendation, before
+building the full cohort:
 
-*(This file will be finalized, with all UNKNOWNs above resolved, before
-Stage 8 data quality analysis begins.)*
+1. Pull a small stratified sample (proxy-positive and proxy-negative
+   patients) from a pilot query.
+2. Manually inspect each patient's structured timeline (and the ~11%
+   NLP-note-derived layer where available) to get an honest, local
+   estimate of the proxy algorithm's precision/recall in All of Us
+   specifically — do not import the Medicare/Kaiser performance figures
+   as an assumption.
+3. If local concordance is unacceptably poor, the options are (in order
+   of preference): (a) tighten the multi-signal algorithm and/or the
+   continuous-engagement filter, (b) fall back to METABRIC for a
+   methods-development/benchmarking arm while treating the All of Us
+   effort as exploratory, (c) revisit whether SEER-Medicare's
+   DUA/IRB/fee-gated but validated approach is worth the access cost —
+   this would be a consequential decision requiring Kevin's sign-off, not
+   an autonomous pivot.
+
+## Open questions to resolve once Workbench access is active
+
+1. Does All of Us populate the OMOP Oncology Module (`episode`/
+   `episode_event` tables)? If yes, this may shortcut much of the manual
+   cohort-building work below. (First query to run — see
+   `DATASETS/all_of_us_omop.md` pilot steps.)
+2. What is the actual completeness of ICD-10 C77-C79 codes and
+   antineoplastic drug_exposure records in the breast cancer cohort?
+3. What is the realistic final cohort size after inclusion/exclusion and
+   the continuous-engagement filter? (Rough, unverified extrapolation
+   suggests low thousands to ~15,000 total breast cancer cases in All of
+   Us before any filtering — to be confirmed, not assumed.)
+
+*(This file will be finalized, with all UNKNOWNs above resolved and the
+Validation Gate results documented, before Stage 8 data quality analysis
+begins.)*

@@ -108,3 +108,33 @@ flagged accordingly.
 - Await feasibility check; update `cohort_definition.md` for a recurrence
   target once confirmed, and revise `DATASETS/all_of_us_omop.md` and
   `RESEARCH_STATE.md` accordingly.
+
+## 2026-09-09 — Session 2 (continued further): recurrence feasibility confirmed MEDIUM, cohort v2 drafted (D006)
+
+**COMPLETED**
+- Feasibility check returned: recurrence detection from All of Us
+  structured data is feasible as a gated pilot (MEDIUM confidence), not
+  blocked like pCR was, but with a real care-capture-completeness risk
+  (quantified via a 2026 claims-linkage comparison study). Logged as D006.
+- Rewrote `cohort_definition.md` (v2) around a time-to-event/censored
+  design with a combined multi-signal recurrence-proxy algorithm and a
+  mandatory manual validation gate before cohort-scale modeling.
+- Updated `DATASETS/all_of_us_omop.md` and `LEAKAGE_AUDIT.md` with the
+  full findings and the resulting label-noise mitigation strategy.
+- This was treated as routine methodology work (same question, same
+  dataset as D005) and completed autonomously; Kevin was informed of the
+  finding directly in chat rather than stopped for another decision.
+
+**BLOCKED**
+- All of Us Registered Tier access (Kevin's identity verification) — still
+  the only real blocker. Once active, the concrete pilot steps in
+  `DATASETS/all_of_us_omop.md` are ready to run (check Oncology Module
+  population, C77-C79 code completeness, pilot the proxy algorithm, run
+  the manual validation gate).
+
+**NEXT STEP**
+- Nothing further can proceed on this dataset until Kevin's All of Us
+  access is active. In the meantime, could start Stage-9-adjacent prep
+  work (baseline model scaffolding in `scripts/`/`configs/`) that doesn't
+  require real data, if useful — otherwise session is idle pending Kevin's
+  access or further direction.

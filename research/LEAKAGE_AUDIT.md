@@ -28,4 +28,25 @@ For every feature we build, we will ask: **"Was this information genuinely avail
 
 If leakage is found in our own pipeline: **STOP the relevant experiment, fix it, and document the fix here** before any results from that experiment are used elsewhere in the repository.
 
+## Label-side leakage risk specific to our chosen design (All of Us recurrence proxy)
+
+This is distinct from feature-side leakage (features seeing the future) and
+was surfaced directly by the D005/D006 feasibility work — worth tracking
+here since it is a leakage-adjacent risk to the VALIDITY of the outcome
+label itself, not just the features:
+
+- **Outcome-ascertainment bias, not temporal leakage per se**: because the
+  recurrence-proxy label can only "see" care within All of Us's linked
+  health systems, patients who move, switch insurance, or receive
+  recurrence care elsewhere will be mislabeled as censored/negative even
+  though they truly recurred. This is a missing-not-at-random labeling
+  problem, and if care-network switching correlates with any patient
+  characteristic (e.g., socioeconomic status, geography), it becomes a
+  **fairness/generalizability risk as well as a label-quality risk** — to
+  be checked explicitly during Stage 14 (robustness/fairness).
+- **Mitigation adopted**: multi-signal proxy algorithm (not single
+  indicator), continuous-engagement filtering, explicit censoring
+  (survival framing) instead of binary labels, and a mandatory manual
+  validation gate before cohort-scale modeling — see `cohort_definition.md`.
+
 *(This file will be expanded with a concrete feature-by-feature audit table once Stage 7 cohort construction begins.)*

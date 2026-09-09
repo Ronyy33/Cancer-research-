@@ -117,6 +117,38 @@ brief Section 33.
 
 ---
 
+---
+
+### D006 — 2026-09-09 — All of Us recurrence feasibility: MEDIUM confidence, proceed as gated pilot (autonomous, routine methodology work)
+The narrower feasibility check launched after D005 found recurrence
+detection from All of Us structured data is **not structurally blocked**
+(unlike pCR/D004), but carries a real, specific risk: a 2026 claims-linkage
+study found All of Us EHR-only data undercounts real procedures by a wide
+margin relative to insurance claims for the same patients over the same
+months — meaning care happening outside a participant's AoU-linked health
+system is invisible to any structured recurrence-proxy algorithm. General
+claims-based recurrence-proxy methods are well-validated elsewhere
+(SEER-Medicare, Kaiser Permanente: 92-94% sensitivity when combining
+multiple structured signals), but that validation was done in
+closed/near-complete care-capture settings that All of Us is not.
+
+**Resulting methodological adjustments** (documented in `cohort_definition.md`
+v2 and `LEAKAGE_AUDIT.md`): treat the recurrence label as noisy rather than
+ground truth; require a combined multi-signal proxy algorithm rather than
+any single indicator; frame the outcome as recurrence-free survival with
+censoring rather than binary classification; run a mandatory manual
+validation gate on a small sample before any cohort-scale modeling; keep
+METABRIC documented as a fallback if the validation gate shows the label
+is too unreliable.
+
+**Type:** routine research/methodology work — proceeding autonomously per
+project brief Section 33 (this refines methodology within the
+already-approved question+dataset from D005; it does not change the
+research question or dataset, so it does not require a further stop-and-ask).
+Kevin was informed of the finding and rationale in chat.
+
+---
+
 *(Further entries appended as decisions are made. Entries requiring human
 sign-off will be flagged **DECISION REQUIRED** in `PROGRESS.md` before being
 finalized here.)*
