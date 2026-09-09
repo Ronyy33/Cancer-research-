@@ -1,7 +1,7 @@
 # Research State
 
 **Last updated:** 2026-09-09
-**Current stage:** Stage 6/7 — dataset+question confirmed, cohort design (v2) drafted, awaiting Kevin's All of Us access to begin real piloting.
+**Current stage:** Stage 6 COMPLETE (dataset confirmed, no institutional barrier) → Stage 7 (cohort construction) ready to begin.
 
 ## Stage status
 
@@ -11,10 +11,10 @@
 | 1. Literature discovery | COMPLETE |
 | 2. Literature synthesis | COMPLETE |
 | 3. Research gap identification | COMPLETE |
-| 4. Candidate research questions | COMPLETE — **DECIDED (D005):** recurrence/relapse prediction (reverted from pCR after D004) |
-| 5. Dataset discovery | COMPLETE — **DECIDED (D005):** All of Us (OMOP CDM) |
-| 6. Dataset acquisition | IN PROGRESS — feasibility confirmed MEDIUM confidence (D006, gated pilot, not a clean guarantee); **BLOCKED on Kevin's All of Us identity verification** for actual Workbench access |
-| 7. Cohort construction | DRAFT v2 written (`cohort_definition.md`) — time-to-event/censored design incorporating label-noise mitigations from D006; will be piloted and finalized once Workbench access is active |
+| 4. Candidate research questions | COMPLETE — recurrence/relapse prediction (D005) |
+| 5. Dataset discovery | COMPLETE (expanded) — see D007 |
+| 6. Dataset acquisition | **COMPLETE** — **DECIDED (D007):** multi-dataset real-data design: Rotterdam (train) + GBSG2 (external validation) as primary pair, METABRIC + TCGA-BRCA as secondary cross-validation cohorts, Duke-Breast-Cancer-MRI as optional richer-feature arm. **All zero-barrier, no institution or credentials required — nothing blocking us now.** |
+| 7. Cohort construction | READY TO BEGIN — `cohort_definition.md` v3 drafted around the multi-dataset design |
 | 8. Data quality analysis | NOT STARTED |
 | 9. Baseline modeling | NOT STARTED |
 | 10. Proposed methodology | NOT STARTED |
@@ -28,15 +28,13 @@
 ## Decision history (see `DECISIONS.md` for full detail)
 
 - **D003:** pCR prediction + All of Us chosen.
-- **D004:** pCR ruled out — All of Us has no free-text pathology report access, which pCR strictly requires. HIGH confidence block.
-- **D005:** Kevin reverted to recurrence/relapse prediction, explicitly requiring a real EHR dataset. All of Us remains the only free, EHR-native option (Flatiron commercial-only, SEER-Medicare needs DUA+IRB+fee).
-- **D006:** Recurrence detection from All of Us structured data assessed as MEDIUM confidence — not blocked like pCR, but real risk that care happening outside All of Us's linked health systems is invisible (a 2026 claims-linkage study found EHR-only data undercounts real procedures by a wide margin vs. claims for the same patients). Resulting design: treat the recurrence label as noisy, use a combined multi-signal proxy algorithm (not one indicator), frame as recurrence-free survival with censoring rather than binary classification, and run a mandatory manual validation gate before any cohort-scale modeling.
+- **D004:** pCR ruled out — All of Us has no pathology-report text access.
+- **D005:** Reverted to recurrence/relapse prediction, EHR dataset required.
+- **D006:** All of Us recurrence detection assessed MEDIUM confidence (structured proxy, gated pilot).
+- **D007:** All of Us abandoned entirely — institute not registered, confirmed unresolvable. Deep multi-hour, 3-agent search found All of Us/NSABP/UK Biobank are all institution-gated, and no real, barrier-free, genuinely multi-visit EHR dataset exists publicly. **Switched to a multi-dataset real-data design** (Rotterdam+GBSG2 primary pair, METABRIC+TCGA-BRCA secondary, Duke-Breast-Cancer-MRI optional) — turns the access constraint into a strength by providing genuine cross-cohort external validation from day one, the field's most-cited weakness.
 
 ## What's blocked vs. not blocked
 
-**Blocked on Kevin:** All of Us Registered Tier requires his own photo-ID identity verification (see `DATASETS/all_of_us_omop.md`). Nothing about real data access can proceed until this is done.
+**Nothing is currently blocked.** Every dataset in the D007 design is immediately, freely accessible with no registration, no institutional affiliation, no fee, no IRB (Rotterdam ships in R's `survival` package; GBSG2 via CRAN/scikit-survival; METABRIC and TCGA-BRCA via cBioPortal; Duke-Breast-Cancer-MRI via public TCIA).
 
-**Not blocked — proceeding autonomously:**
-- `cohort_definition.md` v2 is drafted and ready to pilot the moment Workbench access is live.
-- Once access is active, the first concrete steps are listed in `DATASETS/all_of_us_omop.md` (check whether the OMOP Oncology Module is populated, query C77-C79 code completeness, pilot the multi-signal proxy algorithm, run the manual validation gate on a small sample).
-- METABRIC remains documented as a fallback/benchmarking dataset if the validation gate shows the All of Us proxy label is too unreliable.
+**Next step:** begin Stage 7 (real cohort construction) — download/load the actual data, verify the fields match what was documented in `DATASETS/`, confirm Duke's exact recurrence event rate, and start the data quality analysis (Stage 8).

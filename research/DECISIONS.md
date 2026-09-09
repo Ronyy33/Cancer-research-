@@ -149,6 +149,63 @@ Kevin was informed of the finding and rationale in chat.
 
 ---
 
+---
+
+### D007 — 2026-09-09 — All of Us abandoned (institutional barrier confirmed); switched to multi-dataset real-data plan
+Kevin reported his institute is not registered with All of Us, blocking
+Workbench access regardless of his own identity verification. Rather than
+keep pursuing a single blocked dataset, he asked for a deep, multi-hour
+search for a real (not synthetic), ideally-longitudinal dataset with no
+institutional access requirement.
+
+Three parallel deep-research passes (classic public survival datasets;
+TCIA imaging+outcome datasets; newer open EHR datasets + All of Us
+individual-access recheck) independently converged on the same structural
+finding: **All of Us, NSABP/NCTN (via dbGaP), and UK Biobank are all
+institution-gated in practice** (each requires an institutional
+Signing-Official/DURA co-signature or affiliated-email verification), and
+**no real, publicly-downloadable, genuinely multi-visit EHR-timeline
+dataset for breast cancer recurrence exists** that is accessible to an
+unaffiliated individual. This was checked independently three times and
+is treated as a real constraint of the current public data landscape, not
+a search failure.
+
+**Decision: adopt a multi-dataset real-data research design** rather than
+seeking one large EHR dataset:
+- **Primary training + external validation:** Rotterdam (n=2,982, train) +
+  GBSG2 (n=686, external validation) — both real, zero-barrier, genuine
+  time-to-event recurrence-free survival data, and this exact pairing is
+  a citable, established methodology (Royston & Altman 2013; the standard
+  DeepSurv/pycox benchmark split) — directly answering Gap 3 (lack of
+  external validation) from `RESEARCH_GAPS.md`.
+- **Secondary real cohorts for cross-validation/robustness:** METABRIC
+  (n≈2,509, already investigated, real RFS outcome) and TCGA-BRCA
+  (n≈1,098, DFI/DSS/PFI fields) as additional independent real datasets.
+- **Optional richer-feature / multimodal arm:** Duke-Breast-Cancer-MRI
+  (n=922, real LRFS/DRFS time-to-event fields, richer clinical covariates,
+  optional imaging) — pending direct verification of its recurrence event
+  rate before relying on it for primary modeling.
+
+This turns the access constraint into a design strength: using multiple
+independent real cohorts together gives genuine external/cross-cohort
+validation from day one — the exact thing most published studies in this
+field lack (per `RESEARCH_GAPS.md` Gap 3), achieved via real, freely
+accessible data rather than one large gated EHR source.
+
+**Explicitly not achieved and stated honestly:** true multi-visit,
+repeated-measures EHR time-series data. All real, zero-barrier datasets
+found across three independent deep searches share the same baseline-
+snapshot-plus-survival-time structure. This is documented as a known,
+searched-for-and-confirmed-absent limitation, not an oversight.
+
+**Type:** consequential dataset/design decision — treated as within the
+scope of Kevin's explicit instruction ("get a perfect dataset which we can
+work on... take hours no problem") rather than requiring a further
+stop-and-ask, since the research question (recurrence prediction) is
+unchanged and Kevin delegated the final dataset selection itself.
+
+---
+
 *(Further entries appended as decisions are made. Entries requiring human
 sign-off will be flagged **DECISION REQUIRED** in `PROGRESS.md` before being
 finalized here.)*

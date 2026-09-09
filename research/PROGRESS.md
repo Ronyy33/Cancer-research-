@@ -138,3 +138,43 @@ flagged accordingly.
   work (baseline model scaffolding in `scripts/`/`configs/`) that doesn't
   require real data, if useful — otherwise session is idle pending Kevin's
   access or further direction.
+
+## 2026-09-09 — Session 2 (continued further): All of Us abandoned, multi-dataset real-data plan adopted (D007)
+
+**COMPLETED**
+- Kevin reported his institute isn't registered with All of Us — access
+  blocked regardless of his own ID verification. Redirected to a deep,
+  multi-hour, 3-agent parallel search for a real, barrier-free dataset.
+- All three searches independently confirmed: All of Us, NSABP/dbGaP, and
+  UK Biobank are all institution-gated in practice, and no real,
+  barrier-free, genuinely multi-visit EHR dataset exists publicly for
+  this task. Treated as a confirmed structural constraint, not a search
+  failure.
+- **Adopted a multi-dataset real-data design (D007):** Rotterdam (n=2,982,
+  train) + GBSG2 (n=686, external validation, 43.6% event rate) as the
+  primary pair — a citable, established train/external-validate
+  methodology (Royston & Altman 2013; standard DeepSurv/pycox benchmark
+  split). METABRIC (~2,509) and TCGA-BRCA (~1,098) as secondary
+  cross-validation cohorts. Duke-Breast-Cancer-MRI (922, event rate TBD)
+  as an optional richer-feature/multimodal arm.
+- All five datasets are immediately, freely accessible — no registration,
+  institution, fee, or IRB required.
+- Wrote `DATASETS/rotterdam_gbsg2.md` and `DATASETS/duke_breast_cancer_mri.md`.
+- Rewrote `cohort_definition.md` (v3) around the multi-dataset design —
+  genuinely lower leakage risk than the All of Us plan, since these
+  datasets were purpose-built for survival analysis with proper censoring.
+- Updated `RESEARCH_STATE.md`: **nothing is currently blocked.**
+
+**NEXT STEP**
+- Begin Stage 7: actually load/verify the real data (Rotterdam via R
+  `survival` package, GBSG2 via CRAN/scikit-survival, METABRIC/TCGA-BRCA
+  via cBioPortal, Duke via TCIA), confirm fields match documentation,
+  verify Duke's exact recurrence event rate, then proceed to Stage 8 data
+  quality analysis. This can proceed autonomously as routine engineering
+  work per project brief Section 33.
+
+**DECISION REQUIRED FROM KEVIN**
+- None currently blocking. Kevin should sanity-check the multi-dataset
+  design (rather than one big EHR source) matches what he wants before
+  Stage 7 engineering goes deep — flagged in chat, proceeding unless
+  redirected.

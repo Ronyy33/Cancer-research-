@@ -1,146 +1,124 @@
-# Cohort Definition — Breast Cancer Recurrence / Relapse Prediction
+# Cohort Definition — Breast Cancer Recurrence Prediction (Multi-Dataset Real-Data Design)
 
-**Status: DRAFT, v2.** Superseded from the earlier pCR-focused draft after
-D005 (revert to recurrence, EHR-required) and D006 (All of Us recurrence
-feasibility findings — MEDIUM confidence, proceed as a gated pilot). Will
-be finalized only after real piloting in the All of Us Researcher
-Workbench.
+**Status: DRAFT v3.** Supersedes the All of Us-based v2 draft after D007
+(All of Us abandoned — institutional access barrier confirmed unresolvable;
+switched to a multi-dataset real-data design using Rotterdam+GBSG2 as the
+primary pair, METABRIC and TCGA-BRCA as secondary cohorts, Duke-Breast-
+Cancer-MRI as an optional richer-feature/multimodal arm).
 
-## Clinical question
+## Clinical question (unchanged from v2)
 
 Among breast cancer patients treated with curative intent, can we predict
-— using only information available at the end of primary treatment — the
-future risk of recurrence (locoregional or distant)?
+— using only information available at the end of primary treatment (or, in
+these registry-style datasets, at diagnosis/surgery, which is when their
+baseline variables are recorded) — the future risk of recurrence
+(locoregional or distant), and does this generalize across independent
+real-world cohorts?
 
-## Why the design looks the way it does
+## Why a multi-dataset design (see D007 in `DECISIONS.md`)
 
-Two things this design must account for, both surfaced directly by our own
-research this session:
+Three independent deep searches confirmed that no real, publicly-
+downloadable, genuinely longitudinal (multi-visit) EHR dataset for breast
+cancer recurrence is accessible without institutional backing. Rather than
+treat this as a dead end, the design leans into what IS available: several
+independent real cohorts, each with a genuine time-to-event recurrence
+outcome and zero access barrier. Modeling across multiple real cohorts
+gives genuine external validation — the single most consistently
+documented gap in this field (`RESEARCH_GAPS.md` Gap 3) — using an
+established methodology (Royston & Altman 2013) rather than an invented
+split.
 
-1. **Structured/coded recurrence labels are known to undercount true
-   recurrence** (Gap 2 in `RESEARCH_GAPS.md`: ICD-coded recurrence caught
-   only 2.3% vs. 11.1% true recurrence in one well-verified study). All of
-   Us adds a *second* layer of the same risk: even a good multi-signal
-   structured algorithm can only see care that happens within the health
-   systems feeding data into All of Us — a new 2026 claims-linkage study
-   found real-world care events undercounted by a wide margin relative to
-   insurance claims for the same patients.
-2. Because of (1), **we cannot treat "no recurrence signal observed" as
-   equivalent to "confirmed disease-free."** It must be treated as
-   **censored** (unknown), not as a negative label. This pushes the study
-   toward a **time-to-event / survival framing** (recurrence-free survival
-   with censoring) rather than simple binary classification — which is
-   also more clinically standard and more defensible statistically when
-   labels are known to be imperfect.
+## Datasets in the design
 
-## Proposed structure
+| Role | Dataset | N | Outcome field | Access |
+|---|---|---|---|---|
+| Primary training | Rotterdam | 2,982 | `rfstime`/`recur` (recurrence-free survival) | Built into R `survival` package |
+| Primary external validation | GBSG2 | 686 (43.6% event rate) | recurrence-free survival + censoring | CRAN / scikit-survival |
+| Secondary cross-validation cohort | METABRIC | ~2,509 | Relapse-Free Survival status + months | cBioPortal, public |
+| Secondary cross-validation cohort | TCGA-BRCA | ~1,098 | DFI (disease-free interval), DSS, PFI | cBioPortal/GDC, public |
+| Optional richer-feature / multimodal arm | Duke-Breast-Cancer-MRI | 922 (event rate TBD) | LRFS/DRFS time-to-event | TCIA, public |
+
+## Proposed structure (per dataset)
 
 ```
-Index date = end of primary treatment
-  (surgery + adjuvant chemo/radiation/endocrine therapy initiation,
-   whichever marks the point "active initial treatment" is considered
-   complete - exact operational definition to be finalized once we can
-   see what the data actually supports)
+Index date = surgery / diagnosis (varies slightly by dataset - each
+  dataset's own definition will be used and documented, not forced into
+  an artificial common definition that the source data doesn't support)
   |
-  |-- Baseline window: diagnosis through index date
-  |   (staging, receptor status [ER/PR/HER2], grade, nodal status,
-  |    treatment received, demographics, comorbidities)
+  |-- Baseline features: everything recorded at/before index date
+  |   (age, tumor size/grade, nodal status, receptor status [ER/PR/
+  |    HER2 where available], treatment received)
   |
   v
 Prediction time T = index date
   |
-  | (features locked here - nothing after T may be used as model input)
+  | (features locked here - standard for these datasets since they are
+  |  baseline-snapshot-plus-outcome by design, so leakage risk here is
+  |  LOW as long as we don't accidentally include any post-baseline
+  |  variable, e.g. treatment received AFTER the recorded baseline -
+  |  to be double-checked per dataset during Stage 8)
   v
-Follow-up / observation period (multi-year - recurrence risk extends
-  2-10+ years post-treatment, unlike pCR which resolves in months)
+Follow-up period (years, varies by cohort - Rotterdam/GBSG2 have long
+  follow-up given 1980s-90s origin; METABRIC/TCGA vary)
   |
   v
-Outcome ascertainment via a COMBINED multi-signal proxy algorithm
-  (not any single signal alone - see Methodology below), applied over
-  the full follow-up period:
-    - new secondary-malignancy diagnosis code (ICD-10 C77-C79) after
-      index date
-    - restarted or changed systemic anticancer therapy after a
-      treatment-free gap (proposed threshold: 6-12 months, per
-      published convention - to be validated against our own pilot)
-    - new radiation therapy to a site inconsistent with initial
-      locoregional treatment
-    - death with breast cancer as underlying/contributing cause
-  |
-  v
-Each patient's follow-up ends at: recurrence-proxy-positive event,
-  death, loss of continuous engagement with the AoU-linked health
-  system (a proxy for "we can no longer see this patient's care"),
-  or end of available data - whichever comes first. This is the
-  censoring point.
+Outcome: recurrence-free survival time + event indicator (time-to-event,
+  NOT binary classification - censoring is handled properly since these
+  datasets were built for survival analysis from the start, unlike our
+  earlier noisy-proxy design for All of Us)
 ```
 
-## Outcome label — explicitly treated as NOISY, not ground truth
+## Why this is actually a leakage-safer design than the All of Us plan
 
-Per the feasibility investigation: general claims-based recurrence-proxy
-algorithms achieve 86-94% sensitivity / 93-99% specificity **only when
-validated in closed or near-complete care-capture settings** (Medicare
-fee-for-service claims nationally, or single integrated health systems
-like Kaiser Permanente/Geisinger where patients get nearly all care in
-one system). All of Us is neither — it is a federated, partial-capture
-network. **We should not assume those published performance figures
-transfer**, and must establish our own estimate before trusting the
-label for modeling. See Validation Gate below.
+These datasets were purpose-built for survival analysis by their original
+authors — the outcome fields already properly separate "recorded at
+baseline" from "observed over follow-up," and censoring is handled by
+design rather than needing to be reconstructed from noisy multi-signal
+proxies (contrast with the All of Us design in the superseded v2 draft,
+which needed the elaborate noisy-label mitigation strategy). This is a
+genuine methodological upgrade, not just a fallback.
 
-## Inclusion criteria (draft)
+## Modeling plan sketch (to be refined at Stage 9/10)
 
-- Confirmed invasive breast cancer diagnosis, structured procedure/diagnosis
-  evidence of primary treatment (surgery with or without adjuvant therapy)
-- Sufficient continuous engagement with the AoU-linked health system across
-  the intended follow-up window (operational definition of "continuous
-  engagement" — e.g. minimum visit density — to be set during piloting;
-  this is a deliberate mitigation for the care-outside-network blind spot)
-- No evidence of metastatic (Stage IV) disease at initial diagnosis
+1. **Baselines first** (per project brief Section 17): Kaplan-Meier, Cox
+   Proportional Hazards, Elastic-Net Cox on Rotterdam, tested on GBSG2.
+2. **Stronger baselines:** Random Survival Forest, gradient-boosted
+   survival models (matching what the literature review found — P0027
+   showed Cox can beat DeepSurv, so we test this ourselves rather than
+   assuming deep learning wins).
+3. **Cross-cohort generalization check:** train on Rotterdam, test on
+   GBSG2 (the established pairing); separately check performance on
+   METABRIC and TCGA-BRCA as further independent real-world checks —
+   this is a genuinely multi-cohort external validation study, which is
+   rare in this literature per our own review.
+4. Only after baselines are established and cross-cohort generalization is
+   characterized would a more complex model (e.g., a landmark-time neural
+   architecture inspired by P0016/Multimodal BEHRT) be considered, and
+   only if it demonstrably beats the simpler baselines — per the project's
+   core principle of preferring simpler models when sufficient.
 
-## Exclusion criteria (draft)
+## Inclusion/exclusion criteria
 
-- Stage IV at diagnosis (different clinical question — already metastatic,
-  not at risk of a first recurrence)
-- Male breast cancer (separate stratified analysis if pursued at all, per
-  same reasoning as the earlier pCR draft)
-- Insufficient baseline receptor-status/staging data
-- Patients with no follow-up time after index date (cannot contribute
-  information to a time-to-event outcome)
+Will follow each dataset's own established cohort definition (documented
+in the original publications) rather than imposing an artificial common
+filter that doesn't match what the source data supports. Cross-cohort
+harmonization of variable definitions (e.g., what counts as "positive
+nodes," receptor-status cutoffs) will be documented explicitly during
+Stage 7/8 data quality analysis, since different eras/institutions may
+define these slightly differently — a known real risk when combining
+cohorts, to be checked rather than assumed away.
 
-## MANDATORY VALIDATION GATE before any cohort-scale modeling
+## Open questions for Stage 7/8
 
-Per the feasibility investigation's explicit recommendation, before
-building the full cohort:
+1. Exact Duke-Breast-Cancer-MRI recurrence event count/rate (flagged as
+   unverified in `DATASETS/duke_breast_cancer_mri.md` — must confirm
+   before relying on it for primary modeling).
+2. Harmonizing variable definitions across cohorts from different eras
+   (1978-1993 Rotterdam vs. 2000s+ Duke/TCGA/METABRIC) — treatment
+   patterns and receptor-testing methods have evolved; this must be
+   documented as a limitation, not glossed over.
+3. Whether to pursue Duke's imaging data as a genuine multimodal arm, or
+   use it purely as a fourth structured-clinical cohort.
 
-1. Pull a small stratified sample (proxy-positive and proxy-negative
-   patients) from a pilot query.
-2. Manually inspect each patient's structured timeline (and the ~11%
-   NLP-note-derived layer where available) to get an honest, local
-   estimate of the proxy algorithm's precision/recall in All of Us
-   specifically — do not import the Medicare/Kaiser performance figures
-   as an assumption.
-3. If local concordance is unacceptably poor, the options are (in order
-   of preference): (a) tighten the multi-signal algorithm and/or the
-   continuous-engagement filter, (b) fall back to METABRIC for a
-   methods-development/benchmarking arm while treating the All of Us
-   effort as exploratory, (c) revisit whether SEER-Medicare's
-   DUA/IRB/fee-gated but validated approach is worth the access cost —
-   this would be a consequential decision requiring Kevin's sign-off, not
-   an autonomous pivot.
-
-## Open questions to resolve once Workbench access is active
-
-1. Does All of Us populate the OMOP Oncology Module (`episode`/
-   `episode_event` tables)? If yes, this may shortcut much of the manual
-   cohort-building work below. (First query to run — see
-   `DATASETS/all_of_us_omop.md` pilot steps.)
-2. What is the actual completeness of ICD-10 C77-C79 codes and
-   antineoplastic drug_exposure records in the breast cancer cohort?
-3. What is the realistic final cohort size after inclusion/exclusion and
-   the continuous-engagement filter? (Rough, unverified extrapolation
-   suggests low thousands to ~15,000 total breast cancer cases in All of
-   Us before any filtering — to be confirmed, not assumed.)
-
-*(This file will be finalized, with all UNKNOWNs above resolved and the
-Validation Gate results documented, before Stage 8 data quality analysis
-begins.)*
+*(This file will be finalized once Stage 7 cohort construction actually
+begins against the real downloaded data.)*
