@@ -87,3 +87,24 @@ flagged accordingly.
 - Present revised checkpoint to Kevin with the three options above and a
   recommendation (fall back to I-SPY2). Await his decision before any
   further cohort-design or data-engineering work specific to a dataset.
+
+## 2026-09-09 — Session 2 (continued): reverted to recurrence, EHR required (D005)
+
+**COMPLETED**
+- Kevin redirected the research question back to recurrence/relapse
+  prediction with an explicit EHR-native dataset requirement. Logged as
+  D005 in `DECISIONS.md`. All of Us remains the only free, EHR-native
+  candidate (Flatiron is commercial, SEER-Medicare needs DUA+IRB+fee).
+
+**IN PROGRESS**
+- Feasibility check (background agent) on the narrower question: can
+  recurrence be detected from All of Us STRUCTURED data alone (diagnosis
+  codes, treatment-restart patterns), without needing free-text pathology
+  reports (the specific thing that ruled out pCR in D004). This is a
+  different, more tractable signal than pCR and has precedent elsewhere
+  (SEER-Medicare claims-based recurrence-proxy algorithms).
+
+**NEXT STEP**
+- Await feasibility check; update `cohort_definition.md` for a recurrence
+  target once confirmed, and revise `DATASETS/all_of_us_omop.md` and
+  `RESEARCH_STATE.md` accordingly.

@@ -86,6 +86,37 @@ this entry.
 
 ---
 
+---
+
+### D005 — 2026-09-09 — Reverted to recurrence/relapse prediction, EHR-native dataset required (human-approved)
+Following D004's finding that All of Us cannot support pCR, Kevin redirected
+the research question back to **recurrence/relapse prediction** (the
+originally top-ranked candidate, Q1 in `CANDIDATE_RESEARCH_QUESTIONS.md`,
+and the strongest evidence-backed gap in `RESEARCH_GAPS.md`), with an
+explicit requirement for a **genuine EHR dataset** (not a registry snapshot
+like METABRIC/SEER/TCGA).
+
+Given the dataset landscape from Stage 5, the only dataset that is both (a)
+genuinely EHR-native/longitudinal and (b) free of a cost/IRB/institutional
+barrier is **All of Us** (requires only Kevin's one-time identity
+verification, already a pending action item from D003). Flatiron
+(commercial license) and SEER-Medicare (DUA+IRB+fee) remain structurally
+strong but access-gated.
+
+**Important distinction from the D004 finding:** pCR strictly requires
+free-text pathology reports, which All of Us does not expose — that
+specific outcome was ruled out. Recurrence/relapse is a different signal
+with structurally-supportable proxies (new metastatic-disease diagnosis
+codes, restarted/changed systemic therapy after a treatment-free interval,
+claims-based recurrence-proxy methodologies precedented in the SEER-Medicare
+literature) that were NOT tested in the D004 investigation. A dedicated
+feasibility check was launched immediately following this decision.
+
+**Type:** consequential research decision — human-approved, per project
+brief Section 33.
+
+---
+
 *(Further entries appended as decisions are made. Entries requiring human
 sign-off will be flagged **DECISION REQUIRED** in `PROGRESS.md` before being
 finalized here.)*
