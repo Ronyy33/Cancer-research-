@@ -1,0 +1,46 @@
+# Raw clinical / patient data must NEVER be committed
+data/
+*.csv
+*.parquet
+*.json
+*.sqlite
+*.db
+*.h5
+*.hdf5
+*.feather
+*.pkl
+*.pickle
+
+# Exceptions: small, explicitly-safe/public reference files are allowed
+!research/LITERATURE_MATRIX.csv
+!**/schema*.json
+!**/config*.json
+!configs/**/*.json
+!.vscode/*.json
+
+# Credentials / secrets
+*.env
+.env.*
+**/credentials*
+**/*secret*
+**/*token*
+!**/*secret*.md
+!**/*token*.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Experiment artifacts (large, regenerable)
+research/RESULTS/**/*.png
+research/FIGURES/**/*.png
+!research/FIGURES/**/*.md
+mlruns/
+wandb/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
