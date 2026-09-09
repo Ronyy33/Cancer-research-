@@ -51,13 +51,46 @@ identification or post-treatment pathologic response ascertainment.
    notebooks can be developed against it (analysis happens on-platform;
    no bulk raw-data export off-platform without a separate egress review).
 
-### What the agent is doing in parallel (no human action needed)
+### Feasibility investigation results — 2026-09-09
 
-A feasibility investigation has been launched to check, as far as public
-documentation allows, whether All of Us structured data (OMOP concepts) can
-plausibly support: (a) identifying a neoadjuvant chemotherapy cohort, and
-(b) ascertaining pathologic complete response or an equivalent treatment-
-response outcome, either from structured codes or from clinical notes/
-pathology reports available in the Registered Tier. Findings will be
-appended below once the investigation completes.
+**Conclusion: NOT FEASIBLE as specified. Confidence: HIGH.**
+
+- **No published study has used All of Us for neoadjuvant chemotherapy
+  identification or pCR ascertainment.** Six All of Us breast-cancer papers
+  were found (mastectomy data-quality, surgical-oncology data-quality,
+  CVD-risk in survivors, pain-management prediction, survival disparities,
+  pharmacogenomics) — none touch treatment-response phenotyping.
+- **Two of All of Us's own investigator groups have published dedicated
+  data-quality papers on breast-cancer-surgery cohorts specifically
+  because structured data completeness is a known open problem**: the
+  mastectomy cohort paper (JMIR Cancer 2025, PMC11918980) found
+  chemotherapy exposure data limited to anthracycline-based drugs only
+  (other regimen components e.g. taxanes not confirmed captured), and
+  radiation data miscoded into the wrong OMOP table. The surgical-oncology
+  data-quality paper (JCO CCI 2025, PMC12240465) found low concept
+  prevalence and completeness problems across five surgical cohort types.
+- **Registered Tier provides NO free-text access to clinical notes or
+  pathology reports.** pCR is intrinsically a pathology-report-level
+  judgment (no residual invasive tumor, ypT0/ypN0). Instead, All of Us
+  exposes only NLP-derived structured concept codes covering roughly
+  99,000 of >883,000 enrolled participants (~11%), with no confirmed
+  pathology-response granularity.
+- Neoadjuvant-vs-adjuvant sequencing has been done from OMOP-like data
+  elsewhere (JMIR Med Inform 2021, e25035), but that approach relied on
+  pathology staging fields (ypT/ypN) and explicit "neoadjuvant" text terms
+  that All of Us does not expose to researchers.
+- **I-SPY2 re-confirmed as the purpose-built alternative**: 624 patients,
+  pCR is the trial's pre-adjudicated primary endpoint (not something to be
+  reconstructed), linked imaging + clinical covariates already public via
+  TCIA.
+
+**Recommendation from the investigation:** fall back to I-SPY2 as the
+primary dataset for pCR prediction, OR keep All of Us but change the
+outcome to something structurally supportable (e.g., chemo-regimen
+exposure/cardiotoxicity risk, or treatment-sequencing patterns as a
+process measure rather than a clinical-response measure).
+
+**This is a research-design-level finding, not a routine engineering
+result** — see `DECISIONS.md` D004 and the follow-up checkpoint presented
+to Kevin.
 

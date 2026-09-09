@@ -63,6 +63,29 @@ See `DATASETS/all_of_us_omop.md` and the access instructions added there.
 
 ---
 
+---
+
+### D004 — 2026-09-09 — All of Us + pCR pairing found infeasible; awaiting revised decision
+The feasibility investigation launched immediately after D003 returned a
+high-confidence NOT FEASIBLE finding: All of Us Registered Tier does not
+expose the free-text pathology reports that pCR is defined from, its
+NLP-derived concept layer covers only ~11% of participants with no
+demonstrated pathology-response granularity, and no prior study has
+attempted neoadjuvant-chemo or pCR work using All of Us. Full evidence in
+`DATASETS/all_of_us_omop.md` (feasibility investigation results section).
+
+This is NOT treated as a routine engineering finding to route around
+autonomously — it materially affects the study design chosen in D003
+(project brief Section 33 items 1, 6, 7: choosing between research
+questions/datasets, committing to a hypothesis, choosing between study
+designs). A revised checkpoint was presented to Kevin rather than
+unilaterally switching to a fallback.
+
+**Type:** consequential — human decision required, not yet made at time of
+this entry.
+
+---
+
 *(Further entries appended as decisions are made. Entries requiring human
 sign-off will be flagged **DECISION REQUIRED** in `PROGRESS.md` before being
 finalized here.)*

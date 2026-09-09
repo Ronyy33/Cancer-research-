@@ -63,7 +63,27 @@ flagged accordingly.
   further, since this would be a research-design change significant enough
   to warrant checking back in.
 
-**DECISION REQUIRED FROM KEVIN**
-- Complete All of Us Registered Tier registration + identity verification
-  (see `DATASETS/all_of_us_omop.md`) whenever convenient — this is the
-  actual data-access blocker and cannot be done by the agent.
+**DECISION REQUIRED FROM KEVIN (superseded below by D004 — see updated ask)**
+
+## 2026-09-09 — Session 2 (continued further): feasibility check returned NOT FEASIBLE
+
+**COMPLETED**
+- Feasibility investigation completed: All of Us cannot support pCR
+  ascertainment as specified (HIGH confidence). Full findings appended to
+  `DATASETS/all_of_us_omop.md`; decision logged as D004 in `DECISIONS.md`.
+
+**BLOCKED**
+- Study design decision: whether to (a) fall back to I-SPY2 for pCR
+  prediction as originally recommended, (b) keep All of Us but change the
+  outcome to something structurally supportable, or (c) pursue a hybrid.
+  This is a consequential research-design change and is being put back to
+  Kevin rather than decided autonomously, per project brief Section 33.
+- All of Us Registered Tier registration + identity verification is STILL
+  a live action item for Kevin regardless of which option is chosen, since
+  option (b) and the hybrid option (c) both still need it; only pure
+  option (a) would make it unnecessary for now.
+
+**NEXT STEP**
+- Present revised checkpoint to Kevin with the three options above and a
+  recommendation (fall back to I-SPY2). Await his decision before any
+  further cohort-design or data-engineering work specific to a dataset.
