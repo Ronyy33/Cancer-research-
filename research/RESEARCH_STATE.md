@@ -1,7 +1,7 @@
 # Research State
 
 **Last updated:** 2026-09-16
-**Current stage:** Stage 7 (cohort construction) — data loading complete and directly verified; cohort/feature definition finalization next.
+**Current stage:** Stage 8 COMPLETE (data quality analysis) → Stage 9 (baseline models) next.
 
 ## Stage status
 
@@ -15,8 +15,8 @@
 | 5. Dataset discovery | COMPLETE (expanded) — see D007 |
 | 6. Dataset acquisition | **COMPLETE** — **DECIDED (D007):** multi-dataset real-data design: Rotterdam (train) + GBSG2 (external validation) as primary pair, METABRIC + TCGA-BRCA as secondary cross-validation cohorts, Duke-Breast-Cancer-MRI as optional richer-feature arm. **All zero-barrier, no institution or credentials required — nothing blocking us now.** |
 | 7. Cohort construction | IN PROGRESS — all 4 datasets pulled from authoritative sources and directly verified (not search-snippet sourced): Rotterdam (N=2,982, R `survival` package), GBSG2 (N=686, scikit-survival), METABRIC (N=2,509, cBioPortal GitHub mirror), TCGA-BRCA (N=1,084, same mirror). `src/data/loaders.py` + `tests/test_loaders.py` (5/5 passing) built. Real event rates confirmed: Rotterdam 57.4%, GBSG2 43.6%, METABRIC 40.3%, TCGA-BRCA 8.9% (notably lower — flagged) |
-| 8. Data quality analysis | NOT STARTED — next step |
-| 9. Baseline modeling | NOT STARTED |
+| 8. Data quality analysis | COMPLETE — `scripts/data_quality_analysis.py` run on all 4 cohorts; reports in `research/RESULTS/data_quality/`, figures in `research/FIGURES/data_quality/`. Key findings: Rotterdam/GBSG2 are clean trial-quality data (zero missingness/duplicates/implausible values); METABRIC has a real, structured (non-random) missingness block of ~528 patients tied to specific internal sub-cohort batches — needs an explicit handling decision before modeling; TCGA-BRCA has an empty `WEIGHT` column and a real 13.1% DFS censoring gap on top of its already-low 8.9% event rate; **critical cross-cohort issue found: Rotterdam/GBSG2 report time in days, METABRIC/TCGA-BRCA in months — must be harmonized before any cross-cohort comparison**. Full synthesis in `research/RESULTS/data_quality/SYNTHESIS.md` |
+| 9. Baseline modeling | NOT STARTED — next step |
 | 10. Proposed methodology | NOT STARTED |
 | 11. Experiments | NOT STARTED |
 | 12. Validation | NOT STARTED |

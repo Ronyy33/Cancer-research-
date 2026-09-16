@@ -225,3 +225,45 @@ flagged accordingly.
 - Then Stage 9: baseline models (majority class, Cox/Elastic-Net Cox,
   Random Survival Forest, XGBoost-survival) trained on Rotterdam,
   externally validated on GBSG2, cross-checked on METABRIC/TCGA-BRCA.
+
+## 2026-09-16 — Session 3 (continued): Stage 8 data quality analysis complete
+
+**COMPLETED**
+- Kevin confirmed Python stack and "verify before trust," asked to
+  continue to next stage.
+- Built `src/data/quality.py` (reusable missingness/duplicate/numeric/
+  categorical/implausible-value checks) and
+  `scripts/data_quality_analysis.py` (runs all checks + KM survival
+  curves on all 4 cohorts).
+- Ran it for real. Key findings:
+  - **Rotterdam + GBSG2**: zero missingness, zero duplicates, zero
+    implausible values — clean trial-quality data as expected. Rotterdam
+    has no grade-1 patients at all (real cohort characteristic).
+  - **METABRIC**: found a real, structured (non-random) missingness
+    block of ~528-529 patients simultaneously missing across ~12
+    columns. Investigated directly and confirmed this traces to
+    specific internal `COHORT` batches (1, 7, 8, 9) — a genuine MNAR
+    pattern requiring an explicit handling decision before modeling,
+    not naive imputation. Documented options in `SYNTHESIS.md`.
+  - **TCGA-BRCA**: `WEIGHT` column 100% empty (drop it); real 13.1% DFS
+    censoring gap on top of the already-low 8.9% event rate — reinforces
+    treating it as a secondary cross-check cohort.
+  - **CRITICAL cross-cohort issue found**: Rotterdam/GBSG2 report
+    survival time in **days**, METABRIC/TCGA-BRCA in **months** — flagged
+    clearly before any pooled/cross-cohort comparison happens; the KM
+    overlay plot is explicitly labeled as not-yet-harmonized to avoid
+    a misleading chart.
+  - Also flagged: cross-cohort variable coding differences (grade,
+    receptor status, nodal status) that need documented harmonization
+    rules before Stage 9's cross-cohort validation.
+- Wrote `research/RESULTS/data_quality/{rotterdam,gbsg2,metabric,
+  tcga_brca,SYNTHESIS}.md` and 7 figures in
+  `research/FIGURES/data_quality/`. Sent key figures to Kevin.
+
+**NEXT STEP**
+- Stage 9: baseline models. First resolve the METABRIC batch-missingness
+  decision and the cross-cohort time-unit harmonization (both required
+  before cross-cohort validation, not optional polish), then build
+  Kaplan-Meier baseline, Cox/Elastic-Net Cox, Random Survival Forest, and
+  XGBoost-survival models trained on Rotterdam, externally validated on
+  GBSG2, cross-checked on METABRIC and TCGA-BRCA (secondary weight).
