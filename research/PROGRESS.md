@@ -316,3 +316,40 @@ flagged accordingly.
   models with far better stability, assess whether a more complex
   proposed methodology is actually justified before building one for
   its own sake (per Section 1's core principle).
+
+## 2026-09-16 — Session 3 (continued): experiment_0002, Stage 9 complete
+
+**COMPLETED**
+- Built `scripts/train_metabric_tcga.py`: METABRIC evaluated within-cohort
+  (80/20 holdout + 5-fold CV) after excluding the Stage-8-identified
+  incomplete batch using the exact reproducible missingness rule (not a
+  COHORT-number heuristic, since COHORT=1 spans both complete and
+  incomplete groups). TCGA-BRCA evaluated via 5-fold CV only (too few
+  events for a further holdout split).
+- **METABRIC (N=1,873, 40.7% events):** Cox PH 0.653 holdout, RSF 0.666,
+  GBS 0.665 — a second independent real cohort showing the same pattern
+  as Rotterdam/GBSG2 (tree models modestly ahead, Cox PH close behind
+  with far less train/test divergence).
+- **TCGA-BRCA (N=799, only 74 events/9.3%): CV-mean C-index 0.49-0.53
+  across all three models — essentially indistinguishable from random
+  chance**, despite deceptively high training scores (0.58-0.73) from
+  the tree-based models on this same small cohort. Reported plainly as
+  an honest negative result (project brief Section 28) confirming the
+  earlier decision to treat TCGA-BRCA as secondary/exploratory only.
+- Documented in `research/EXPERIMENTS/experiment_0002.md`, explicitly
+  scoped as within-cohort evaluation, NOT external validation of the
+  Rotterdam-trained model (different feature sets - would be
+  methodologically wrong to conflate the two).
+- **Stage 9 (baseline modeling) is now complete** across all 4 real
+  cohorts.
+
+**NEXT STEP**
+- Stage 10: three independent real cohorts (Rotterdam/GBSG2 pair +
+  METABRIC) now converge on the same finding - Cox PH is competitive
+  with tree ensembles and substantially more stable. Assess honestly
+  whether this means a more complex proposed methodology (e.g. a
+  landmark-time neural architecture per P0016/Multimodal BEHRT) is
+  actually justified, or whether a well-specified Cox model is the
+  right, defensible answer for this feature set and these cohort sizes
+  - per the project's core principle (Section 1) of preferring simpler
+  models when they're sufficient.
