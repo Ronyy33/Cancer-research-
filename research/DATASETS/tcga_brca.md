@@ -1,5 +1,26 @@
 # Dataset: TCGA-BRCA (The Cancer Genome Atlas — Breast Cancer) / GDC
 
+## ✅ VERIFIED DIRECTLY — 2026-09-16
+
+Actually pulled and inspected this session (`scripts/pull_metabric_tcga.sh`,
+PanCancer Atlas 2018 study, via cBioPortal's GitHub datahub mirror):
+- **N = 1,084** confirmed exactly (resolves the earlier ~1,084-1,098
+  ambiguity across secondhand sources — this is the real, current count).
+- **DFS_STATUS** (Disease Free Status): 858 disease-free, **84
+  recurred/progressed**, 142 missing → event rate **8.9%** of valid
+  records — **much lower than Rotterdam (57.4%), GBSG2 (43.6%), or
+  METABRIC (40.3%)**. This matters: with only 84 real events, statistical
+  power for TCGA-BRCA alone is limited; best used as a smaller
+  cross-validation/robustness check rather than a primary training set.
+- **PFS_STATUS** (Progression Free Status): 145 progression events/1083
+  valid (13.4%) — a somewhat larger event pool if progression (rather
+  than strict recurrence) is used as the outcome instead.
+- **OS_STATUS**: 933 living, 151 deceased.
+- Real columns confirmed present: AJCC stage (T/N/M), subtype, ethnicity,
+  race, radiation therapy, new tumor event indicator, genetic ancestry
+  label — genomic data available separately via the same datahub source
+  if a molecular-augmentation arm is pursued later.
+
 **Real or synthetic:** Real, NCI/NHGRI (Genomic Data Commons), mirrored at cBioPortal.
 
 **Patient count:** Reported as ~1,084–1,098 patients depending on cohort release (original Nature 2012 publication ~1,098 with a comparable count for PanCancer Atlas; GDC recompute figures vary slightly across sources) — exact current figure has minor discrepancies across sources; best-available consensus ≈1,098 cases in the current GDC TCGA-BRCA project.

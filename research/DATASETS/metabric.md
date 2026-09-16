@@ -1,5 +1,21 @@
 # Dataset: METABRIC (Molecular Taxonomy of Breast Cancer International Consortium)
 
+## ✅ VERIFIED DIRECTLY — 2026-09-16
+
+Actually pulled and inspected this session (`scripts/pull_metabric_tcga.sh`,
+via cBioPortal's public GitHub datahub mirror — the main cBioPortal site
+is blocked by this environment's network policy, but the GitHub mirror
+serves the identical authoritative files):
+- **N = 2,509** confirmed exactly.
+- **RFS_STATUS** (Relapse Free Status): 1,486 not recurred, **1,002
+  recurred**, 21 missing → event rate **40.3%** of valid records.
+- **OS_STATUS**: 837 living, 1,144 deceased, 528 missing.
+- Real columns confirmed present: lymph nodes positive, Nottingham
+  Prognostic Index, cellularity, chemotherapy, ER/HER2 status, hormone
+  therapy, menopausal state, integrative cluster, age at diagnosis,
+  PAM50+Claudin-low subtype, 3-gene classifier subtype, tumor laterality,
+  radiotherapy, histologic subtype, surgery type.
+
 **Real or synthetic:** Real, UK + Canada breast cancer molecular cohort (5 hospitals/centers), ~2,509 patients with clinical observations, 1,980 with gene expression profiles.
 
 **Variables confirmed:** age at diagnosis, tumor size/grade/stage, lymph node status, ER/PR/HER2 status, PAM50 molecular subtype, Nottingham Prognostic Index, type of breast surgery (mastectomy vs. breast-conserving), treatment flags (chemo/hormone/radiotherapy), **overall survival (OS) time+status**, and **relapse-free survival (RFS) time+status — 1,403 of 2,509 patients (55.9%) experienced a recurrence event** (directly confirmed via search — a genuinely well-powered recurrence-type endpoint, notably better than SEER or TCGA in this respect).

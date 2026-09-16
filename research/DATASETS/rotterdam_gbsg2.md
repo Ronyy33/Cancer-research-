@@ -2,6 +2,23 @@
 
 **Real or synthetic:** Both REAL patient cohorts.
 
+## ✅ VERIFIED DIRECTLY — 2026-09-16
+
+Unlike every other dataset claim in this research program up to this point
+(all sourced from WebSearch snippets, since WebFetch was blocked all
+session), both datasets below were **actually loaded and inspected** this
+session:
+- Rotterdam pulled directly from R's own `survival` package (the
+  authoritative source, not a mirror) via `scripts/pull_rotterdam.R`:
+  confirmed N=2,982, columns exactly as documented, recurrence-free-
+  survival event rate (recurrence OR death) = **1,713/2,982 = 57.4%**.
+- GBSG2 loaded via `sksurv.datasets.load_gbsg2()`: confirmed N=686,
+  8 feature columns, event rate = **299/686 = 43.6%** — matches the
+  search-snippet-sourced number exactly.
+
+Both are real, both check out. See `src/data/loaders.py` for the loading
+code and `scripts/pull_rotterdam.R` for the R-side pull.
+
 ## Rotterdam (Rotterdam Tumour Bank)
 
 - **N = 2,982** real patients who had surgery for primary breast cancer, 1978–1993 (verified across multiple independent CRAN/package sources).

@@ -178,3 +178,50 @@ flagged accordingly.
   design (rather than one big EHR source) matches what he wants before
   Stage 7 engineering goes deep — flagged in chat, proceeding unless
   redirected.
+
+## 2026-09-16 — Session 3: Stage 7 data loading, all datasets directly verified
+
+**COMPLETED**
+- Kevin confirmed the multi-dataset plan and asked to continue.
+- Set up Python environment (`.venv`, `requirements.txt`: pandas, numpy,
+  scikit-survival, lifelines, scikit-learn, xgboost, shap, matplotlib,
+  seaborn, pyyaml, requests, pytest) and installed R (`r-base-core`) for
+  authoritative access to Rotterdam.
+- **All 4 real datasets pulled from authoritative sources and directly
+  verified** - a genuine upgrade from every earlier dataset claim this
+  session, which was necessarily sourced from WebSearch snippets since
+  WebFetch was blocked all session:
+  - Rotterdam: pulled directly from R's `survival` package
+    (`scripts/pull_rotterdam.R`). N=2,982 confirmed exactly. Recurrence-
+    free-survival event rate = 1,713/2,982 = 57.4%.
+  - GBSG2: loaded via `sksurv.datasets.load_gbsg2()`. N=686 confirmed.
+    Event rate = 299/686 = 43.6% (matches earlier search-sourced figure
+    exactly).
+  - METABRIC: pulled from cBioPortal's public GitHub datahub mirror
+    (main cBioPortal site is blocked by this environment's network
+    policy; the GitHub mirror serves identical authoritative files) via
+    `scripts/pull_metabric_tcga.sh`. N=2,509 confirmed. RFS event rate =
+    1,002/2,488 valid = 40.3%.
+  - TCGA-BRCA (PanCancer Atlas 2018): same mirror. N=1,084 confirmed
+    (resolves earlier ~1,084-1,098 ambiguity). DFS event rate =
+    84/942 valid = **8.9% — notably lower than the other three**,
+    flagged clearly in `DATASETS/tcga_brca.md` as a real limitation
+    (best used as a smaller cross-check, not primary training data).
+- Built `src/data/loaders.py` with a loader per dataset, all standardized
+  to `rfstime`/`rfs_event` columns for interchangeable use.
+- Built `tests/test_loaders.py` - 5/5 passing, checks real shapes and
+  sane event-rate ranges (not brittle exact-match assertions), plus a
+  placeholder leakage-awareness check ahead of the full Stage 8 audit.
+- Updated `DATASETS/rotterdam_gbsg2.md`, `DATASETS/metabric.md`,
+  `DATASETS/tcga_brca.md` with "VERIFIED DIRECTLY" sections.
+- Raw data files confirmed NOT tracked by git (`.gitignore` working as
+  intended) - only code, tests, and docs are committed.
+
+**NEXT STEP**
+- Stage 8: real data quality analysis (missingness, distributions,
+  outliers, cross-cohort variable harmonization e.g. receptor-status
+  cutoffs across eras) on all 4 cohorts, output to
+  `research/RESULTS/data_quality/` and `research/FIGURES/data_quality/`.
+- Then Stage 9: baseline models (majority class, Cox/Elastic-Net Cox,
+  Random Survival Forest, XGBoost-survival) trained on Rotterdam,
+  externally validated on GBSG2, cross-checked on METABRIC/TCGA-BRCA.

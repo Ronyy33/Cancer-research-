@@ -1,5 +1,7 @@
 # Raw clinical / patient data must NEVER be committed
-data/
+# (anchored to repo root - do NOT remove the leading slash, otherwise
+# this also silently swallows src/data/ and any other */data/ directory)
+/data/
 *.csv
 *.parquet
 *.json
