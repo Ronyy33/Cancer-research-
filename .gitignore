@@ -15,6 +15,10 @@
 
 # Exceptions: small, explicitly-safe/public reference files are allowed
 !research/LITERATURE_MATRIX.csv
+# Aggregate experiment RESULTS (e.g. model-name + metric tables) are safe
+# to commit - they contain no patient-level data, only summary metrics.
+# Anything under data/ is still excluded regardless (see /data/ above).
+!research/RESULTS/**/*.csv
 !**/schema*.json
 !**/config*.json
 !configs/**/*.json

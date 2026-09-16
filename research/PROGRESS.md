@@ -267,3 +267,52 @@ flagged accordingly.
   Kaplan-Meier baseline, Cox/Elastic-Net Cox, Random Survival Forest, and
   XGBoost-survival models trained on Rotterdam, externally validated on
   GBSG2, cross-checked on METABRIC and TCGA-BRCA (secondary weight).
+
+## 2026-09-16 — Session 3 (continued): Stage 9 baselines, experiment_0001
+
+**COMPLETED**
+- Kevin confirmed both pending decisions (exclude METABRIC's incomplete
+  batch; harmonize time units to months) and asked to continue.
+- Built `src/data/harmonize.py`: converts Rotterdam/GBSG2 time from days
+  to months, and maps their differently-coded columns to a common
+  8-feature schema (age, nodes, ER/PR values, menopause, tumor-size
+  bucket, grade, hormone therapy). Documented every mapping decision
+  inline, including the deliberate exclusion of chemo (not comparably
+  available in GBSG2's released columns) and the honest handling of
+  GBSG2's 81 grade-1 patients (kept in the test set, not dropped to
+  inflate performance, since Rotterdam has none to train on).
+- Built `scripts/train_baselines.py` and ran it for real.
+  **Found and fixed a genuine bug along the way**: un-reduced one-hot
+  encoding across 4 categorical blocks made the Cox PH design matrix
+  exactly rank-deficient (each block's dummies sum to a constant
+  1-vector; with no intercept term to absorb it, multiple such blocks
+  collide) - crashed with "ill-conditioned matrix" / NaN search
+  direction. Fixed with `drop="first"`, added a regression test
+  (`tests/test_harmonize.py::test_onehot_encoding_does_not_crash_coxph`)
+  so it can't silently recur.
+- **Results (experiment_0001, Rotterdam train → GBSG2 external test,
+  Harrell's C-index):** Cox PH 0.654, Elastic-Net Cox 0.646, Random
+  Survival Forest 0.672 (best raw score), Gradient Boosting Survival
+  0.669.
+- **Key honest finding:** RSF's higher raw score comes with 4.5x more
+  overfitting than Cox PH (train→external gap 0.061 vs 0.013) - a
+  direct, self-generated instance of the same pattern found in our own
+  literature review (P0027: Cox beat DeepSurv on held-out data). Written
+  up as a real argument for preferring the simpler, more stable model
+  per the project's First Principle, not just noted in passing.
+- Added `tests/test_harmonize.py` (5 new tests, all passing; 10/10 total
+  across the test suite).
+- Documented the full run in `research/EXPERIMENTS/experiment_0001.md`
+  per the project's experiment-tracking requirement (Section 25) -
+  dataset version, features, hyperparameters, seed, validation strategy,
+  results, and explicit limitations of this first baseline pass.
+
+**NEXT STEP**
+- Add METABRIC (own within-cohort baseline, since its native features
+  differ from Rotterdam/GBSG2's harmonized schema) and TCGA-BRCA
+  (secondary, low-event-rate cross-check) as further real-data
+  validation points.
+- Then Stage 10: given how close Cox PH already comes to the tree-based
+  models with far better stability, assess whether a more complex
+  proposed methodology is actually justified before building one for
+  its own sake (per Section 1's core principle).
