@@ -1,7 +1,7 @@
 # Research State
 
 **Last updated:** 2026-09-17
-**Current stage:** Stage 14 (robustness/fairness) COMPLETE → Stage 15 (research analysis/synthesis) next.
+**Current stage:** Stage 16 COMPLETE — all 16 stages of the research state machine have now been executed at least once. Remaining work is refinement/extension, not new-stage initiation.
 
 ## Stage status
 
@@ -22,8 +22,8 @@
 | 12. Validation | Genuine external validation (Rotterdam→GBSG2) + independent within-cohort validation (METABRIC) both done — satisfies the project's validation hierarchy at the external-validation level for the primary pair |
 | 13. Explainability | **COMPLETE** — `research/EXPERIMENTS/experiment_0003.md`: Cox PH hazard ratios + permutation importance (Cox PH vs RSF) on held-out Rotterdam split. Finding: positive lymph nodes, tumor size, and grade dominate across both methods and both model classes — matches established clinical prognostic factors (a real sanity check on the pipeline). Explicit association-not-causation framing throughout, per Section 24 |
 | 14. Robustness/fairness | **COMPLETE** — `research/EXPERIMENTS/experiment_0004.md`: subgroup analysis (Cox PH on GBSG2 external test), all subgroups met the minimum sample threshold. **Key finding: model discriminates notably worse for patients with 1-3 positive nodes (C-index 0.564, near chance) than 4+ nodes (0.608)** — weakest exactly where risk stratification matters most clinically. Grade-1 patients (out-of-distribution for training, per experiment_0001) performed reasonably (0.660) — a reassuring but not over-interpreted finding given small N. **Honest limitation stated directly: Rotterdam/GBSG2 have no race/ethnicity/socioeconomic data, so the equity gap from Gap 4 in RESEARCH_GAPS.md cannot be assessed with current datasets** |
-| 15. Research analysis | NOT STARTED — next step |
-| 16. Paper preparation | NOT STARTED |
+| 15. Research analysis | **COMPLETE** — `research/RESEARCH_ANALYSIS.md`: full honest synthesis of the project's pivot history, 5 real bugs/data-quality issues found and fixed along the way, modeling results, comparison to the literature, and explicit statement of what was and wasn't achieved relative to the original ambition |
+| 16. Paper preparation | **COMPLETE** — `docs/` populated: abstract, introduction, related_work, methods, experiments, results, discussion, limitations, conclusion — all drawing from real completed experiments, none speculative. `research/REPORTING_CHECKLIST.md` added (TRIPOD+AI self-assessment, since this is a prediction-model development/validation study; PROBAST-AI as secondary risk-of-bias check). Explicitly flags remaining reporting gaps (no calibration assessment, no formal CIs, no Table 1) rather than claiming full compliance |
 
 ## Decision history (see `DECISIONS.md` for full detail)
 
