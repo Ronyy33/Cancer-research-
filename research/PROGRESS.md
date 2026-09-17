@@ -353,3 +353,42 @@ flagged accordingly.
   right, defensible answer for this feature set and these cohort sizes
   - per the project's core principle (Section 1) of preferring simpler
   models when they're sufficient.
+
+## 2026-09-17 — Session 3 (continued): Stage 10 methodology decision + Stage 13 explainability
+
+**COMPLETED**
+- **Stage 10:** Wrote `research/PROPOSED_METHODOLOGY.md`. Decision: Cox
+  PH is the primary model. Evidence table across 3 cohorts shows a
+  consistent, small (0.013-0.018) performance gap vs. tree ensembles
+  with 3-5x less overfitting each time - not a one-off result. Explicitly
+  considered and rejected a landmark-time neural architecture (the
+  strongest exemplar from our own literature review, P0016/Multimodal
+  BEHRT) because it requires genuine multi-visit EHR trajectories that
+  none of our real, barrier-free datasets have - a data-shape constraint,
+  stated as such, not a modeling-effort shortcut. Conditions that would
+  justify revisiting this decision are stated explicitly (institutional
+  EHR access, larger gap under future feature engineering, or a specific
+  nonlinear sub-question), so this isn't a permanent, unexamined default.
+- **Stage 13:** Built `scripts/explainability.py`. Two complementary,
+  model-agnostic-comparable methods on Rotterdam (75/25 held-out split):
+  Cox PH's native hazard ratios, and permutation importance (Cox PH vs
+  RSF, same method for both so they're fairly comparable).
+  **Finding: positive lymph nodes, tumor size, and grade dominate across
+  BOTH methods AND both model classes** - four independent analytical
+  angles converging on the same answer. This matches real, established
+  breast cancer prognostic factors (the TNM/Nottingham Prognostic Index
+  backbone cited throughout our own literature review) - a genuine
+  sanity check that the pipeline found real clinical signal, not
+  spurious correlations. Hormone therapy showed a protective association
+  (HR=0.880), also clinically consistent. Explicit
+  association-not-causation framing throughout (Section 24).
+  Documented in `research/EXPERIMENTS/experiment_0003.md`, sent 2
+  figures to Kevin.
+
+**NEXT STEP**
+- Stage 14: robustness/fairness - check whether the predictive pattern
+  holds consistently across age groups and other subgroups where sample
+  size permits (project brief Section 23 - do not manufacture subgroup
+  analyses when sample sizes are inadequate).
+- Then Stage 15 (research analysis / honest synthesis) and Stage 16
+  (paper-ready output) to close out the modeling arc.

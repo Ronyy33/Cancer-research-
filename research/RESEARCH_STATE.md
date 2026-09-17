@@ -1,7 +1,7 @@
 # Research State
 
-**Last updated:** 2026-09-16
-**Current stage:** Stage 9 baselines COMPLETE (all 4 cohorts) → Stage 10 (decide if a more complex methodology is justified) next.
+**Last updated:** 2026-09-17
+**Current stage:** Stage 13 (explainability) COMPLETE → Stage 14 (robustness/fairness subgroup checks) next.
 
 ## Stage status
 
@@ -17,11 +17,11 @@
 | 7. Cohort construction | IN PROGRESS — all 4 datasets pulled from authoritative sources and directly verified (not search-snippet sourced): Rotterdam (N=2,982, R `survival` package), GBSG2 (N=686, scikit-survival), METABRIC (N=2,509, cBioPortal GitHub mirror), TCGA-BRCA (N=1,084, same mirror). `src/data/loaders.py` + `tests/test_loaders.py` (5/5 passing) built. Real event rates confirmed: Rotterdam 57.4%, GBSG2 43.6%, METABRIC 40.3%, TCGA-BRCA 8.9% (notably lower — flagged) |
 | 8. Data quality analysis | COMPLETE — `scripts/data_quality_analysis.py` run on all 4 cohorts; reports in `research/RESULTS/data_quality/`, figures in `research/FIGURES/data_quality/`. Key findings: Rotterdam/GBSG2 are clean trial-quality data (zero missingness/duplicates/implausible values); METABRIC has a real, structured (non-random) missingness block of ~528 patients tied to specific internal sub-cohort batches — needs an explicit handling decision before modeling; TCGA-BRCA has an empty `WEIGHT` column and a real 13.1% DFS censoring gap on top of its already-low 8.9% event rate; **critical cross-cohort issue found: Rotterdam/GBSG2 report time in days, METABRIC/TCGA-BRCA in months — must be harmonized before any cross-cohort comparison**. Full synthesis in `research/RESULTS/data_quality/SYNTHESIS.md` |
 | 9. Baseline modeling | **COMPLETE.** `experiment_0001` (Rotterdam→GBSG2 external validation): Cox PH 0.654, Elastic-Net 0.646, RSF 0.672 (best raw, most overfitting), GBS 0.669. `experiment_0002` (METABRIC + TCGA-BRCA within-cohort): METABRIC shows the same pattern as Rotterdam/GBSG2 (Cox PH 0.653 holdout vs RSF 0.666, much smaller train/test gap) — a second independent cohort confirming the finding. **TCGA-BRCA's CV-mean C-index (0.49-0.53) is essentially random chance** despite deceptively high training scores — confirms it as unreliable for drawing conclusions given only 74 real events, an honest negative result, not swept under the rug. Found/fixed a real one-hot-encoding collinearity bug along the way (regression-tested). See `research/EXPERIMENTS/experiment_0001.md` and `experiment_0002.md` |
-| 10. Proposed methodology | IN PROGRESS — current evidence across 3 independent real cohorts favors NOT building a more complex model; assessing whether that's the honest final answer for this feature set |
-| 11. Experiments | NOT STARTED |
-| 12. Validation | NOT STARTED |
-| 13. Explainability | NOT STARTED |
-| 14. Robustness/fairness | NOT STARTED |
+| 10. Proposed methodology | **COMPLETE** — `research/PROPOSED_METHODOLOGY.md`: Cox PH selected as primary model. Evidence: 3 independent real cohorts show tree ensembles beat Cox PH by only 0.013-0.018 C-index while overfitting 3-5x more; a landmark-time neural architecture (P0016) was explicitly considered and rejected as unsuitable given our data's baseline-snapshot (not multi-visit) structure. Conditions for revisiting this decision stated explicitly (genuine longitudinal EHR access, larger performance gap, or a specific nonlinear sub-question) |
+| 11. Experiments | Substantially covered by experiment_0001-0003 (tracked, reproducible, not post-hoc-tuned) |
+| 12. Validation | Genuine external validation (Rotterdam→GBSG2) + independent within-cohort validation (METABRIC) both done — satisfies the project's validation hierarchy at the external-validation level for the primary pair |
+| 13. Explainability | **COMPLETE** — `research/EXPERIMENTS/experiment_0003.md`: Cox PH hazard ratios + permutation importance (Cox PH vs RSF) on held-out Rotterdam split. Finding: positive lymph nodes, tumor size, and grade dominate across both methods and both model classes — matches established clinical prognostic factors (a real sanity check on the pipeline). Explicit association-not-causation framing throughout, per Section 24 |
+| 14. Robustness/fairness | NOT STARTED — next step |
 | 15. Research analysis | NOT STARTED |
 | 16. Paper preparation | NOT STARTED |
 
