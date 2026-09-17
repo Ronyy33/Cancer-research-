@@ -392,3 +392,42 @@ flagged accordingly.
   analyses when sample sizes are inadequate).
 - Then Stage 15 (research analysis / honest synthesis) and Stage 16
   (paper-ready output) to close out the modeling arc.
+
+## 2026-09-17 — Session 3 (continued): Stage 14 robustness/fairness
+
+**COMPLETED**
+- Built `scripts/subgroup_analysis.py`: Cox PH (fit on full Rotterdam,
+  N=2,982) evaluated on GBSG2 (external test) across 6 clinically
+  motivated subgroup dimensions (age band, menopausal status, grade,
+  hormone therapy, nodal burden). All subgroups met the minimum
+  threshold (N>=30, events>=10) - none needed exclusion this time.
+- **Key finding, flagged directly rather than buried in a results
+  table:** the model discriminates notably worse for patients with 1-3
+  positive nodes (C-index 0.564, barely above chance) than for 4+ nodes
+  (0.608) - both below the overall 0.654. This is exactly the
+  population where risk stratification matters most clinically (heavy
+  nodal burden is already obviously high-risk without a model; 1-3
+  nodes is the more clinically ambiguous group a good model should
+  help with) - so this is a real, honestly-reported limitation of the
+  current feature set for its most clinically useful application, not
+  a footnote.
+- Reassuring secondary finding: the grade-1 subgroup (flagged as
+  out-of-distribution for the Rotterdam-trained model back in
+  experiment_0001) still discriminated reasonably (C-index 0.660,
+  comparable to grade-2's 0.620) - noted without over-interpreting,
+  given the small subgroup size (N=81).
+- **Honest limitation stated directly, not silently skipped**:
+  Rotterdam and GBSG2 are both European cohorts with zero race/
+  ethnicity/socioeconomic data, so the demographic equity gap
+  documented in our own literature review (RESEARCH_GAPS.md Gap 4)
+  cannot be assessed or addressed with the datasets currently in this
+  project.
+- Documented in `research/EXPERIMENTS/experiment_0004.md`.
+
+**NEXT STEP**
+- Stage 15: pull experiments 0001-0004 into one honest research
+  synthesis - external validation results, the Cox-vs-ensemble finding,
+  explainability, and the subgroup weaknesses/data gaps, all together
+  rather than scattered across separate files.
+- Then Stage 16 (paper-ready docs/ output) if the research program is
+  ready to move toward a written report.

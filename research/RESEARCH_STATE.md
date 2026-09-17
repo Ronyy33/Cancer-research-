@@ -1,7 +1,7 @@
 # Research State
 
 **Last updated:** 2026-09-17
-**Current stage:** Stage 13 (explainability) COMPLETE → Stage 14 (robustness/fairness subgroup checks) next.
+**Current stage:** Stage 14 (robustness/fairness) COMPLETE → Stage 15 (research analysis/synthesis) next.
 
 ## Stage status
 
@@ -21,8 +21,8 @@
 | 11. Experiments | Substantially covered by experiment_0001-0003 (tracked, reproducible, not post-hoc-tuned) |
 | 12. Validation | Genuine external validation (Rotterdam→GBSG2) + independent within-cohort validation (METABRIC) both done — satisfies the project's validation hierarchy at the external-validation level for the primary pair |
 | 13. Explainability | **COMPLETE** — `research/EXPERIMENTS/experiment_0003.md`: Cox PH hazard ratios + permutation importance (Cox PH vs RSF) on held-out Rotterdam split. Finding: positive lymph nodes, tumor size, and grade dominate across both methods and both model classes — matches established clinical prognostic factors (a real sanity check on the pipeline). Explicit association-not-causation framing throughout, per Section 24 |
-| 14. Robustness/fairness | NOT STARTED — next step |
-| 15. Research analysis | NOT STARTED |
+| 14. Robustness/fairness | **COMPLETE** — `research/EXPERIMENTS/experiment_0004.md`: subgroup analysis (Cox PH on GBSG2 external test), all subgroups met the minimum sample threshold. **Key finding: model discriminates notably worse for patients with 1-3 positive nodes (C-index 0.564, near chance) than 4+ nodes (0.608)** — weakest exactly where risk stratification matters most clinically. Grade-1 patients (out-of-distribution for training, per experiment_0001) performed reasonably (0.660) — a reassuring but not over-interpreted finding given small N. **Honest limitation stated directly: Rotterdam/GBSG2 have no race/ethnicity/socioeconomic data, so the equity gap from Gap 4 in RESEARCH_GAPS.md cannot be assessed with current datasets** |
+| 15. Research analysis | NOT STARTED — next step |
 | 16. Paper preparation | NOT STARTED |
 
 ## Decision history (see `DECISIONS.md` for full detail)
