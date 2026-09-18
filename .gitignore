@@ -1,7 +1,11 @@
-# Raw clinical / patient data must NEVER be committed
+# Raw clinical / patient data must NEVER be committed by default
 # (anchored to repo root - do NOT remove the leading slash, otherwise
 # this also silently swallows src/data/ and any other */data/ directory)
-/data/
+# NOTE: /data/* (not /data/) is used deliberately - a bare "/data/"
+# blocks git from ever traversing into the directory at all, which
+# makes per-file exceptions further down this file impossible (a
+# documented git limitation, not a bug in the rules below).
+/data/*
 *.csv
 *.parquet
 *.json
@@ -54,3 +58,21 @@ wandb/
 
 # OS
 .DS_Store
+
+# EXCEPTION (explicit, deliberate, Kevin's decision 2026-09-18): the 4
+# raw source datasets are committed so they can be shown directly in a
+# meeting. These are de-identified public research cohorts, not
+# identifiable patient records - see data/README.md for the license
+# caveat (cBioPortal's redistribution terms for METABRIC/TCGA-BRCA were
+# not independently verified before committing). This block MUST stay
+# at the end of the file - gitignore rules are order-dependent (last
+# match wins), and an earlier attempt to place this near the top of the
+# file was silently overridden by the *.csv rule further down. It also
+# requires /data/* (not /data/) above - see the note there.
+!/data/README.md
+!/data/raw/
+/data/raw/*
+!/data/raw/rotterdam_raw.csv
+!/data/raw/gbsg2_raw.csv
+!/data/raw/metabric_clinical_patient.txt
+!/data/raw/tcga_brca_clinical_patient.txt
