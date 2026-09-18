@@ -19,6 +19,10 @@
 # to commit - they contain no patient-level data, only summary metrics.
 # Anything under data/ is still excluded regardless (see /data/ above).
 !research/RESULTS/**/*.csv
+# Final compiled-report figures (aggregate plots, no patient-level data)
+# are a deliverable, unlike the regenerable working figures under
+# research/FIGURES/.
+!docs/figures/**/*.png
 !**/schema*.json
 !**/config*.json
 !configs/**/*.json
